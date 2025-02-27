@@ -1,0 +1,44 @@
+@import "modern-normalize/modern-normalize.css";
+@import "fonts.css";
+
+* {
+  font-family: "soehne", sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #ffffff;
+  color: #212327;
+  font-size: 16px;
+  font-family: "soehne", sans-serif;
+  font-variant-ligatures: common-ligatures;
+  -moz-font-feature-settings: "liga", "clig";
+  -webkit-font-feature-settings: "liga", "clig";
+  font-feature-settings: "liga", "clig";
+  font-variant-numeric: tabular-nums;
+}
+
+:root {
+  /**
+   * Safe area inset amounts
+   *
+   * These variables should be used (like `top: var(--safe-top)`) instead of the underlying
+   * browser-set values (like `env(safe-area-inset-top)`) because different platforms/devices
+   * set those `env` values differently.
+   * 
+   * We want our app to draw below all system bars (the iOS status bar, the iOS notch, the iOS home * handle, the Android status bar, and the Android navigation), and we need proper spacing specs
+   * to deal with all of the possible cases whenever we are in movile view.
+   *
+   * We set these with a default of their `env` counterparts, but the values are overwritten by
+   * `services/mobile/capacitor`.
+   */
+  --safe-top: env(safe-area-inset-top, 0);
+  --safe-right: env(safe-area-inset-right, 0);
+  --safe-bottom: env(safe-area-inset-bottom, 0);
+  --safe-left: env(safe-area-inset-left, 0);
+}

@@ -1,0 +1,63 @@
+{
+  "name": "sentisoft-ui",
+  "description": "The _SentiSoft_ application UI",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "vite --mode development",
+    "build": "vite build",
+    "serve": "vite preview",
+    "lint": "yarn run lint:eslint && yarn run lint:stylelint",
+    "lint:eslint": "eslint ."
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^13.5.0",
+    "color2k": "^2.0.3",
+    "lucide-react": "^0.476.0",
+    "modern-normalize": "^3.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "styled-components": "^5.3.11"
+  },
+  "packageManager": "yarn@1.22.19",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@testing-library/dom": "^10.4.0",
+    "@types/node": "^22.13.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/styled-components": "^5.1.26",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.18.2",
+    "vite": "^6.0.5"
+  },
+  "resolutions": {
+    "@types/react": "18.3.18"
+  }
+}

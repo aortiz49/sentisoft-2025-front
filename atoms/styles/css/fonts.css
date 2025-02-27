@@ -1,0 +1,73 @@
+/**
+ * CSS font definitions for our brand typeface, Söhne
+ *
+ * A total of five fonts are defined here, with tuples (weight, style, stretch) as follows:
+ * - (400, normal, normal): our standard font, "Söhne Buch"
+ * - (400, italic, normal): an italic version of that standard font, "Söhne Buch Kursiv"
+ * - (500, normal, normal): a mid-weight font used for special circumstances, "Söhne Kräftig"
+ * - (500, normal, expanded): an extended font used for brand character, "Söhne Breit Kräftig"
+ * - (600, normal, normal): our bold font, "Söhne Halbfett"
+ * - (700, normal, expanded): our bold extended font used for brand, "Söhne Breit Dreiviertelfett"
+ *
+ * About the name: we use the name `soehne` here. Mapping the "o" with an umlaut to "oe" is the 
+ * standard way to transcribe German within limited character sets, e.g., in the type foundry's 
+ * URLs for the typeface.
+ *
+ * About the font files: these are the WOFF and WOFF2 files from the foundry, but updated so that
+ * the "alternate G" stylistic set (the one that replaces the single-storey lowercase "g" glyphs
+ * with a two-storey variant) is baked in and presented by default.
+ */
+
+@font-face {
+  font-family: "soehne";
+  src: url("../fonts/soehne/soehne_buch.woff2") format("woff2"),
+    url("../fonts/soehne/soehne_buch.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: "soehne";
+  src: url("../fonts/soehne/soehne_buch_kursiv.woff2") format("woff2"),
+    url("../fonts/soehne/soehne_buch_kursiv.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: "soehne";
+  src: url("../fonts/soehne/soehne_kraeftig.woff2") format("woff2"),
+    url("../fonts/soehne/soehne_kraeftig.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: "soehne";
+  src: url("../fonts/soehne/soehne_breit_kraeftig.woff2") format("woff2"),
+    url("../fonts/soehne/soehne_breit_kraeftig.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: expanded;
+}
+
+@font-face {
+  font-family: "soehne";
+  src: url("../fonts/soehne/soehne_halbfett.woff2") format("woff2"),
+    url("../fonts/soehne/soehne_halbfett.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: "soehne";
+  src: url("../fonts/soehne/soehne_breit_dreiviertelfett.woff2") format("woff2"),
+    url("../fonts/soehne/soehne_breit_dreiviertelfett.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-stretch: expanded;
+}
