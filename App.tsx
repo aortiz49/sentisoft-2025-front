@@ -4,9 +4,9 @@ import { Breadcrumbs } from './atoms/navigation';
 
 const App: React.FC = () => {
     const breadcrumbs = [
-        { content: 'Service catalog', action: () => console.log('Go 1') },
-        { content: 'Plumbing', action: () => console.log('Go 2') },
-        { content: 'Michael Strahan' },
+        { content: 'Main route', action: () => console.log('Go 1') },
+        { content: 'Subroute 1 ', action: () => console.log('Go 2') },
+        { content: 'Resource' },
     ];
     return (
         <div
