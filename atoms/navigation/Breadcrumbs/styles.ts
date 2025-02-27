@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-import { getColor } from '#/atoms/styles/palette';
+import { getWhite } from '#/atoms/styles/palette';
 
 export const Container = styled.nav`
     display: flex;
@@ -20,10 +20,10 @@ export const ContentWrapper = styled.span<{ link?: boolean }>`
         link &&
         css`
             cursor: pointer;
-            color: ${getColor('purple', 600)};
+            color: ${getWhite()};
 
             &:hover {
-                color: ${getColor('purple', 800)};
+                color: ${getWhite()};
             }
 
             &:last-child {

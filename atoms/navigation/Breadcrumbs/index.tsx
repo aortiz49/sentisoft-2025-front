@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Body16 } from '#/atoms/typography';
 import { ChevronRight } from 'lucide-react';
 import { ChevronWrapper, Container, ContentWrapper } from './styles';
+import { getColor } from '#/atoms/styles/palette';
 
 export type Breadcrumb = {
     /**
@@ -38,7 +39,10 @@ export const Breadcrumbs: React.FC<Props> = ({ breadcrumbs }) => {
                         </ContentWrapper>
                         {index !== breadcrumbs.length - 1 && (
                             <ChevronWrapper>
-                                <ChevronRight size={CHEVRON_SIZE} />
+                                <ChevronRight
+                                    color={getColor('neutral', 600)}
+                                    size={CHEVRON_SIZE}
+                                />
                             </ChevronWrapper>
                         )}
                     </React.Fragment>
