@@ -22,7 +22,11 @@ export default function IndexPage() {
           <Snippet hideCopyButton hideSymbol variant="bordered">
             <span>
               Start your first interview{' '}
-              <Button radius="full" variant="shadow">
+              <Button
+                className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg"
+                radius="full"
+                variant="shadow"
+              >
                 <p>Start</p>
               </Button>
             </span>
