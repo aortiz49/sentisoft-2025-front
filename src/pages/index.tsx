@@ -50,7 +50,7 @@ export default function IndexPage() {
                 isLoading={isLoading}
                 radius="full"
                 variant="shadow"
-                onClick={handleClick}
+                onPress={handleClick}
               >
                 <p className="leading-none">Start</p>
               </Button>
