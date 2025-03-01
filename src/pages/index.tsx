@@ -5,29 +5,59 @@ import { Card, CardBody } from '@heroui/card';
 
 import { title, subtitle } from '@/components/primitives';
 import DefaultLayout from '@/layouts/default';
+
 export default function IndexPage() {
   const [isLoading, setIsLoading] = useState(false);
-
   const [renderOption, setRenderOption] = useState(true);
+  const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
 
-  const [pokemonData, setPokemonData] = useState<{
-    name: string;
-    id: number;
-  } | null>(null);
+  const questions = [
+    'How do you handle tight deadlines when multiple projects require your attention simultaneously?',
+    'Describe a situation where you had to explain a complex technical concept to a non-technical stakeholder.',
+    'Tell me about a time when you received critical feedback on your code. How did you respond?',
+    'How do you approach disagreements with team members about technical decisions?',
+    'Describe your experience working in agile development environments.',
+    'How do you prioritize tasks when everything seems urgent?',
+    'Tell me about a time when you had to learn a new technology quickly to complete a project.',
+    'How do you handle situations where requirements change midway through a project?',
+    'Describe a situation where you demonstrated leadership within a development team.',
+    'How do you maintain work-life balance during intensive development cycles?',
+    'Tell me about a time when you made a significant mistake. How did you handle it?',
+    'How do you approach mentoring junior developers?',
+    'Describe your communication style when working with remote team members.',
+    'How do you stay updated with the latest technologies and development practices?',
+    'Tell me about a time when you had to push back on a feature request. How did you handle it?',
+    "How do you handle situations where you don't know the answer to a problem?",
+    'Describe a situation where you had to collaborate with designers to implement a user interface.',
+    "How do you approach code reviews, both when reviewing others' code and receiving feedback on yours?",
+    'Tell me about a time when you had to make a decision with incomplete information.',
+    'How do you handle conflicts within a development team?',
+    'Describe your approach to documentation and knowledge sharing.',
+    'How do you manage stress during critical production issues or system outages?',
+    'Tell me about a time when you had to advocate for better development practices or tools.',
+    'How do you communicate project delays or technical challenges to project managers or clients?',
+    'Describe a situation where you had to adapt to a completely different tech stack or development environment.',
+    'How do you balance quality with speed when developing features?',
+    'Tell me about a time when you had to work with difficult team members or stakeholders.',
+    'How do you approach giving constructive feedback to peers?',
+    'Describe your experience working cross-functionally with product managers, designers, and other stakeholders.',
+    'How do you handle situations where you strongly disagree with a decision made by management?',
+  ];
 
   const handleClick = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://pokeapi.co/api/v2/pokemon/ditto');
-      const data = await response.json();
+      // Randomly select 3 questions
+      const shuffled = [...questions].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, 3);
 
       setTimeout(() => {
-        setPokemonData({ name: data.name, id: data.id });
+        setSelectedQuestions(selected);
         setIsLoading(false);
         setRenderOption(false);
       }, 1000);
     } catch (error) {
-      console.error('Error fetching Pokemon data:', error);
+      console.error('Error:', error);
       setIsLoading(false);
     }
   };
@@ -63,27 +93,28 @@ export default function IndexPage() {
             </Snippet>
           </div>
         )}
-        {pokemonData && (
+        {selectedQuestions.length > 0 && (
           <Card
             isBlurred
             className="border-none bg-background/60 dark:bg-default-100/50 max-w-[610px]"
             shadow="sm"
           >
             <CardBody>
-              <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
-                <div className="flex flex-col col-span-6 md:col-span-8">
-                  <div className="flex justify-between items-start">
-                    <div className="flex flex-col gap-0">
-                      <h3 className="font-semibold text-foreground/90">
-                        Daily Mix
-                      </h3>
-                      <p className="text-small text-foreground/80">12 Tracks</p>
-                      <h1 className="text-large font-medium mt-2">
-                        Frontend Radio
-                      </h1>
-                    </div>
+              <div className="flex flex-col gap-4">
+                <h3 className="font-semibold text-foreground/90">
+                  Behavioral Interview Questions
+                </h3>
+                {selectedQuestions.map((question, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none"
+                  >
+                    <p className="text-foreground/80 font-medium">
+                      Question {index + 1}:
+                    </p>
+                    <p className="text-foreground/90">{question}</p>
                   </div>
-                </div>
+                ))}
               </div>
             </CardBody>
           </Card>
