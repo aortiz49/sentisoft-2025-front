@@ -23,11 +23,11 @@ export default function IndexPage() {
             <span>
               Start your first interview{' '}
               <Button
-                className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg"
+                className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg px-8 h-6 text-xs "
                 radius="full"
                 variant="shadow"
               >
-                <p>Start</p>
+                <p className="leading-none">Start</p>
               </Button>
             </span>
           </Snippet>
