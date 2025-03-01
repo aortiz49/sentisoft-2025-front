@@ -1,1 +1,0 @@
-# sentisoft-2025
