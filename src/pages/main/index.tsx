@@ -203,7 +203,16 @@ export default function IndexPage() {
                     questionsWithAudio.filter((q) => q.audioURL).length < 3
                   }
                   radius="full"
-                  onPress={() => alert('Submitted!')}
+                  onPress={() => {
+                    console.log(
+                      'Submitted Audio Data:',
+                      questionsWithAudio.map((item) => ({
+                        question: item.question,
+                        audioURL: item.audioURL,
+                      }))
+                    );
+                    alert('Submitted!');
+                  }}
                 >
                   Submit
                 </Button>
