@@ -12,13 +12,14 @@ export default function useInterviewAnalysis() {
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const deepgramApiKey = import.meta.env.VITE_DEEPGRAM_API_KEY;
+
+  // ✅ Load backend URL from environment variables
+  const backendApiUrl =
+    import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000';
+
   const analyzeInterview = async (
-    questionsWithAudio: {
-      question: string;
-      audioBlob: Blob | null;
-    }[],
-    deepgramApiKey: string,
-    llmApiKey: string
+    questionsWithAudio: { question: string; audioBlob: Blob | null }[]
   ) => {
     setIsAnalyzing(true);
     setError(null);
@@ -30,7 +31,8 @@ export default function useInterviewAnalysis() {
         const formData = new FormData();
 
         formData.append('file', item.audioBlob, `question_${index}.webm`);
-
+        console.log(import.meta.env.VITE_DEEPGRAM_API_KEY);
+        // ✅ Send request to Deepgram for transcription
         const deepgramResponse = await fetch(
           'https://api.deepgram.com/v1/listen?punctuate=true&model=general&detect_language=true',
           {
@@ -45,18 +47,15 @@ export default function useInterviewAnalysis() {
         }
 
         const deepgramResult = await deepgramResponse.json();
-
         const transcript =
           deepgramResult.results.channels[0].alternatives[0]?.transcript ?? '';
         const sentiment =
-          deepgramResult.results.channels[0].alternatives[0]?.sentiment
-            ?.overall ?? 'unknown';
+          deepgramResult.results.channels[0]?.alternatives[0]?.sentiment
+            ?.overall || 'unknown';
 
-        const feedback = await analyzeWithLLM(
-          item.question,
-          transcript,
-          llmApiKey
-        );
+        console.log(transcript);
+        // ✅ Send transcript to FastAPI backend (instead of calling Claude directly)
+        const feedback = await analyzeWithBackend(item.question, transcript);
 
         return {
           question: item.question,
@@ -84,45 +83,27 @@ export default function useInterviewAnalysis() {
     }
   };
 
-  const analyzeWithLLM = async (
-    question: string,
-    transcript: string,
-    apiKey: string
-  ) => {
-    const prompt = `
-      You are a behavioral interview coach.
+  // ✅ Updated function to send request to your FastAPI backend (which calls Claude)
+  const analyzeWithBackend = async (question: string, transcript: string) => {
+    try {
+      const response = await fetch(`${backendApiUrl}/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, transcript }),
+      });
 
-      Evaluate the following response to the interview question: "${question}"
+      if (!response.ok) {
+        throw new Error(`Backend API error: ${response.status}`);
+      }
 
-      Candidate's response:
-      ${transcript}
+      const result = await response.json();
 
-      Please provide:
-      - Feedback on clarity, structure, and communication style.
-      - Whether the candidate stayed on topic.
-      - Suggested improvements.
-    `;
+      return result.feedback; // Make sure the backend returns `{ feedback: "..." }`
+    } catch (error) {
+      console.error('Error analyzing with backend:', error);
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-3-opus-20240229',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.5,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`LLM API error: ${response.status}`);
+      return 'Error processing response.';
     }
-
-    const result = await response.json();
-
-    return result.choices[0].message.content;
   };
 
   return {

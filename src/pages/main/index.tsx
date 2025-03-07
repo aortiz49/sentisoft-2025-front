@@ -39,9 +39,6 @@ export default function IndexPage() {
   const { isAnalyzing, results, error, analyzeInterview } =
     useInterviewAnalysis();
 
-  const deepgramApiKey = import.meta.env.VITE_DEEPGRAM_API_KEY;
-  const claudeApiKey = import.meta.env.VITE_CLAUDE_API_KEY;
-
   const handleStart = () => {
     setIsLoading(true);
     setStarted(true);
@@ -79,7 +76,15 @@ export default function IndexPage() {
 
       setQuestionsWithAudio((prev) =>
         prev.map((q, i) =>
-          i === index ? { ...q, audioURL, audioBlob, isRecording: false } : q
+          i === index
+            ? {
+                ...q,
+                audioURL,
+                audioBlob,
+                isRecording: false,
+                timeRemaining: 0,
+              }
+            : q
         )
       );
       clearTimeout(countdownTimerRef.current!);
@@ -109,7 +114,7 @@ export default function IndexPage() {
     }, 1000);
 
     setTimeout(() => {
-      stopRecording(index); // Auto stop after 30 seconds
+      stopRecording(index);
     }, MAX_RECORDING_TIME * 1000);
   };
 
@@ -117,13 +122,14 @@ export default function IndexPage() {
     mediaRecorderRef.current?.stop();
     clearInterval(countdownTimerRef.current!);
     setQuestionsWithAudio((prev) =>
-      prev.map((q, i) => (i === index ? { ...q, isRecording: false } : q))
+      prev.map((q, i) =>
+        i === index ? { ...q, isRecording: false, timeRemaining: 0 } : q
+      )
     );
   };
 
   const stopMicrophone = () => {
     const stream = mediaRecorderRef.current?.stream;
-
     stream?.getTracks().forEach((track) => track.stop());
   };
 
@@ -134,9 +140,7 @@ export default function IndexPage() {
       questionsWithAudio.map((q) => ({
         question: q.question,
         audioBlob: q.audioBlob ?? null,
-      })),
-      deepgramApiKey,
-      claudeApiKey
+      }))
     );
 
     console.log('Analysis Results:', analysisResults);
@@ -150,7 +154,7 @@ export default function IndexPage() {
               ...q,
               transcript: result.transcript,
               sentiment: result.sentiment,
-              feedback: result.feedback,
+              feedback: result.feedback, // ✅ Ensure feedback is properly updated
             }
           : q;
       })
@@ -234,7 +238,7 @@ export default function IndexPage() {
                       </Button>
                       {item.isRecording && (
                         <span className="text-sm font-mono text-red-500">
-                          Time remaining: {item.timeRemaining}s
+                          ⏳ Time remaining: {item.timeRemaining}s
                         </span>
                       )}
                     </div>
@@ -259,17 +263,13 @@ export default function IndexPage() {
                   </div>
                 ))}
               </div>
-
               <div className="flex justify-end mt-6">
                 <Button
                   className="bg-blue-600 text-white"
-                  isDisabled={
-                    questionsWithAudio.filter((q) => q.audioURL).length < 1
-                  }
-                  radius="full"
+                  isDisabled={isAnalyzing}
                   onPress={handleSubmit}
                 >
-                  Submit
+                  {isAnalyzing ? 'Analyzing...' : 'Submit'}
                 </Button>
               </div>
             </CardBody>
