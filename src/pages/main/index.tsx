@@ -147,14 +147,15 @@ export default function IndexPage() {
         {questionsWithAudio.length > 0 && (
           <Card
             isBlurred
-            className="border-none bg-background/60 dark:bg-default-100/50 max-w-[610px]"
+            className="border-none bg-background/60 dark:bg-default-100/50 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8"
             shadow="sm"
           >
-            <CardBody>
+            <CardBody className="p-8">
               <div className="flex flex-col gap-4">
-                <h3 className="font-semibold text-foreground/90">
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
                   Behavioral Interview Questions
-                </h3>
+                </h1>
+
                 {questionsWithAudio.map((item, index) => (
                   <div
                     key={index}
@@ -163,9 +164,11 @@ export default function IndexPage() {
                     <p className="text-foreground/80 font-medium">
                       Question {index + 1}:
                     </p>
-                    <p className="text-foreground/90">{item.question}</p>
+                    <p className="text-foreground/90 whitespace-normal break-words w-full">
+                      {item.question}
+                    </p>
 
-                    <div className="flex gap-2 mt-2 items-center">
+                    <div className="flex flex-wrap gap-2 mt-2 items-center">
                       <Button
                         className={
                           item.isRecording ? 'bg-red-500' : 'bg-green-500'
@@ -191,6 +194,19 @@ export default function IndexPage() {
                     )}
                   </div>
                 ))}
+              </div>
+
+              <div className="flex justify-end mt-6">
+                <Button
+                  className="bg-blue-600 text-white"
+                  isDisabled={
+                    questionsWithAudio.filter((q) => q.audioURL).length < 3
+                  }
+                  radius="full"
+                  onPress={() => alert('Submitted!')}
+                >
+                  Submit
+                </Button>
               </div>
             </CardBody>
           </Card>
