@@ -14,7 +14,10 @@ interface QuestionWithAudio {
   question: string;
   audioURL: string | null;
   isRecording: boolean;
+  timeRemaining?: number;
 }
+
+const MAX_RECORDING_TIME = 30;
 
 export default function IndexPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +29,7 @@ export default function IndexPage() {
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleStart = () => {
     setIsLoading(true);
@@ -35,6 +39,7 @@ export default function IndexPage() {
       question: q,
       audioURL: null,
       isRecording: false,
+      timeRemaining: MAX_RECORDING_TIME,
     }));
 
     setTimeout(() => {
@@ -56,7 +61,7 @@ export default function IndexPage() {
 
     mediaRecorderRef.current.onstop = () => {
       const audioBlob = new Blob(audioChunksRef.current, {
-        type: 'audio/wav',
+        type: 'audio/webm',
       });
       const audioURL = URL.createObjectURL(audioBlob);
 
@@ -65,16 +70,40 @@ export default function IndexPage() {
           i === index ? { ...q, audioURL, isRecording: false } : q
         )
       );
+      clearTimeout(countdownTimerRef.current!);
     };
 
     mediaRecorderRef.current.start();
     setQuestionsWithAudio((prev) =>
-      prev.map((q, i) => (i === index ? { ...q, isRecording: true } : q))
+      prev.map((q, i) =>
+        i === index
+          ? { ...q, isRecording: true, timeRemaining: MAX_RECORDING_TIME }
+          : q
+      )
     );
+
+    startCountdownTimer(index);
+  };
+
+  const startCountdownTimer = (index: number) => {
+    countdownTimerRef.current = setInterval(() => {
+      setQuestionsWithAudio((prev) =>
+        prev.map((q, i) =>
+          i === index && q.isRecording && q.timeRemaining! > 0
+            ? { ...q, timeRemaining: q.timeRemaining! - 1 }
+            : q
+        )
+      );
+    }, 1000);
+
+    setTimeout(() => {
+      stopRecording(index); // Auto stop after 60 seconds
+    }, MAX_RECORDING_TIME * 1000);
   };
 
   const stopRecording = (index: number) => {
     mediaRecorderRef.current?.stop();
+    clearInterval(countdownTimerRef.current!);
     setQuestionsWithAudio((prev) =>
       prev.map((q, i) => (i === index ? { ...q, isRecording: false } : q))
     );
@@ -136,7 +165,7 @@ export default function IndexPage() {
                     </p>
                     <p className="text-foreground/90">{item.question}</p>
 
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex gap-2 mt-2 items-center">
                       <Button
                         className={
                           item.isRecording ? 'bg-red-500' : 'bg-green-500'
@@ -150,6 +179,11 @@ export default function IndexPage() {
                       >
                         {item.isRecording ? 'Stop Recording' : 'Record Answer'}
                       </Button>
+                      {item.isRecording && (
+                        <span className="text-sm font-mono text-red-500">
+                          Time remaining: {item.timeRemaining}s
+                        </span>
+                      )}
                     </div>
 
                     {item.audioURL && (
