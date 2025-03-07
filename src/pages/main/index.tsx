@@ -109,6 +109,12 @@ export default function IndexPage() {
     );
   };
 
+  const stopMicrophone = () => {
+    const stream = mediaRecorderRef.current?.stream;
+
+    stream?.getTracks().forEach((track) => track.stop());
+  };
+
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
@@ -204,6 +210,7 @@ export default function IndexPage() {
                   }
                   radius="full"
                   onPress={() => {
+                    stopMicrophone();
                     console.log(
                       'Submitted Audio Data:',
                       questionsWithAudio.map((item) => ({
