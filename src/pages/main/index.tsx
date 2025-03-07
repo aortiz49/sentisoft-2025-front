@@ -9,15 +9,20 @@ import { questions } from './config';
 
 import { title, subtitle } from '@/components/primitives';
 import DefaultLayout from '@/layouts/default';
+import useInterviewAnalysis from '@/hooks/useInterviewAnalysis';
 
-interface QuestionWithAudio {
+type QuestionWithAudio = {
   question: string;
   audioURL: string | null;
+  audioBlob?: Blob | null;
+  transcript?: string;
+  sentiment?: string;
+  feedback?: string;
   isRecording: boolean;
   timeRemaining?: number;
-}
+};
 
-const MAX_RECORDING_TIME = 30;
+const MAX_RECORDING_TIME = 60;
 
 export default function IndexPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,13 +36,20 @@ export default function IndexPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { isAnalyzing, results, error, analyzeInterview } =
+    useInterviewAnalysis();
+
+  const deepgramApiKey = import.meta.env.VITE_DEEPGRAM_API_KEY;
+  const claudeApiKey = import.meta.env.VITE_CLAUDE_API_KEY;
+
   const handleStart = () => {
     setIsLoading(true);
     setStarted(true);
     const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 3).map((q) => ({
+    const selected = shuffled.slice(0, 1).map((q) => ({
       question: q,
       audioURL: null,
+      audioBlob: null,
       isRecording: false,
       timeRemaining: MAX_RECORDING_TIME,
     }));
@@ -67,7 +79,7 @@ export default function IndexPage() {
 
       setQuestionsWithAudio((prev) =>
         prev.map((q, i) =>
-          i === index ? { ...q, audioURL, isRecording: false } : q
+          i === index ? { ...q, audioURL, audioBlob, isRecording: false } : q
         )
       );
       clearTimeout(countdownTimerRef.current!);
@@ -97,7 +109,7 @@ export default function IndexPage() {
     }, 1000);
 
     setTimeout(() => {
-      stopRecording(index); // Auto stop after 60 seconds
+      stopRecording(index); // Auto stop after 30 seconds
     }, MAX_RECORDING_TIME * 1000);
   };
 
@@ -113,6 +125,38 @@ export default function IndexPage() {
     const stream = mediaRecorderRef.current?.stream;
 
     stream?.getTracks().forEach((track) => track.stop());
+  };
+
+  const handleSubmit = async () => {
+    stopMicrophone();
+
+    const analysisResults = await analyzeInterview(
+      questionsWithAudio.map((q) => ({
+        question: q.question,
+        audioBlob: q.audioBlob ?? null,
+      })),
+      deepgramApiKey,
+      claudeApiKey
+    );
+
+    console.log('Analysis Results:', analysisResults);
+
+    setQuestionsWithAudio((prev) =>
+      prev.map((q) => {
+        const result = analysisResults.find((r) => r.question === q.question);
+
+        return result
+          ? {
+              ...q,
+              transcript: result.transcript,
+              sentiment: result.sentiment,
+              feedback: result.feedback,
+            }
+          : q;
+      })
+    );
+
+    alert('Analysis complete! Check console for results.');
   };
 
   return (
@@ -198,6 +242,20 @@ export default function IndexPage() {
                     {item.audioURL && (
                       <CustomAudioPlayer audioURL={item.audioURL} />
                     )}
+
+                    {item.transcript && (
+                      <div className="mt-2 p-3 bg-gray-100 rounded">
+                        <p>
+                          <strong>Transcript:</strong> {item.transcript}
+                        </p>
+                        <p>
+                          <strong>Sentiment:</strong> {item.sentiment}
+                        </p>
+                        <p>
+                          <strong>Feedback:</strong> {item.feedback}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -206,20 +264,10 @@ export default function IndexPage() {
                 <Button
                   className="bg-blue-600 text-white"
                   isDisabled={
-                    questionsWithAudio.filter((q) => q.audioURL).length < 3
+                    questionsWithAudio.filter((q) => q.audioURL).length < 1
                   }
                   radius="full"
-                  onPress={() => {
-                    stopMicrophone();
-                    console.log(
-                      'Submitted Audio Data:',
-                      questionsWithAudio.map((item) => ({
-                        question: item.question,
-                        audioURL: item.audioURL,
-                      }))
-                    );
-                    alert('Submitted!');
-                  }}
+                  onPress={handleSubmit}
                 >
                   Submit
                 </Button>
