@@ -20,6 +20,11 @@ To clone the project, run the following command:
 ```bash
 git clone https://github.com/frontio-ai/vite-template.git
 ```
+### Add a .env.local configuration file
+```
+VITE_PORT=5173
+VITE_DEEPGRAM_API_KEY=<KEY GOES HERE>
+```
 
 ### Install dependencies
 
