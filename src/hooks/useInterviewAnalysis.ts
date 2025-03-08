@@ -1,11 +1,6 @@
 import { useState } from 'react';
 
-interface AnalysisResult {
-  question: string;
-  transcript: string;
-  sentiment: string;
-  feedback: string;
-}
+import { AnalysisResult } from '@/pages/main';
 
 export default function useInterviewAnalysis() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -31,8 +26,7 @@ export default function useInterviewAnalysis() {
         const formData = new FormData();
 
         formData.append('file', item.audioBlob, `question_${index}.webm`);
-        console.log(import.meta.env.VITE_DEEPGRAM_API_KEY);
-        // ✅ Send request to Deepgram for transcription
+        // this sends request to Deepgram for transcription
         const deepgramResponse = await fetch(
           'https://api.deepgram.com/v1/listen?punctuate=true&model=general&detect_language=true',
           {
@@ -49,18 +43,13 @@ export default function useInterviewAnalysis() {
         const deepgramResult = await deepgramResponse.json();
         const transcript =
           deepgramResult.results.channels[0].alternatives[0]?.transcript ?? '';
-        const sentiment =
-          deepgramResult.results.channels[0]?.alternatives[0]?.sentiment
-            ?.overall || 'unknown';
 
-        console.log(transcript);
-        // ✅ Send transcript to FastAPI backend (instead of calling Claude directly)
+        // this sends the transcript to FastAPI backend (instead of calling Claude directly)
         const feedback = await analyzeWithBackend(item.question, transcript);
 
         return {
           question: item.question,
           transcript,
-          sentiment,
           feedback,
         };
       });
@@ -83,7 +72,6 @@ export default function useInterviewAnalysis() {
     }
   };
 
-  // ✅ Updated function to send request to your FastAPI backend (which calls Claude)
   const analyzeWithBackend = async (question: string, transcript: string) => {
     try {
       const response = await fetch(`${backendApiUrl}/analyze`, {
@@ -98,7 +86,7 @@ export default function useInterviewAnalysis() {
 
       const result = await response.json();
 
-      return result.feedback; // Make sure the backend returns `{ feedback: "..." }`
+      return result.feedback;
     } catch (error) {
       console.error('Error analyzing with backend:', error);
 
