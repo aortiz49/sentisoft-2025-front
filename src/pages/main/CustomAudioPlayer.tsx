@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@heroui/button';
 
-interface CustomAudioPlayerProps {
+type CustomAudioPlayerProps = {
   audioURL: string;
-}
+};
 
 export default function CustomAudioPlayer({
   audioURL,

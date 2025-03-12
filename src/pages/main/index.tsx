@@ -309,14 +309,12 @@ export default function IndexPage() {
                             </div>
                           </div>
 
-                          {/* 🔥 Feedback Section */}
                           <div>
                             <span className="font-medium text-gray-700 dark:text-gray-300">
                               Feedback:
                             </span>
                             <p className="mt-1 text-gray-600 dark:text-gray-400">
                               {item.feedback?.feedback}{' '}
-                              {/* ✅ Extract the text feedback correctly */}
                             </p>
                           </div>
                         </div>
