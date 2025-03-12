@@ -70,47 +70,64 @@ export default function IndexPage() {
   };
 
   const startRecording = async (index: number) => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    audioChunksRef.current = [];
+      const mimeType = MediaRecorder.isTypeSupported(
+        'audio/mp4;codecs=mp4a.40.2'
+      )
+        ? 'audio/mp4;codecs=mp4a.40.2'
+        : 'audio/webm;codecs=opus';
 
-    mediaRecorderRef.current.ondataavailable = (event) => {
-      audioChunksRef.current.push(event.data);
-    };
+      console.log('Using mime type:', mimeType); // Debug log
 
-    mediaRecorderRef.current.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, {
-        type: 'audio/webm',
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType,
+        audioBitsPerSecond: 128000, // Specify a reasonable bitrate
       });
-      const audioURL = URL.createObjectURL(audioBlob);
 
+      audioChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: mimeType,
+        });
+        const audioURL = URL.createObjectURL(audioBlob);
+
+        setQuestionsWithAudio((prev) =>
+          prev.map((q, i) =>
+            i === index
+              ? {
+                  ...q,
+                  audioURL,
+                  audioBlob,
+                  isRecording: false,
+                  timeRemaining: 0,
+                }
+              : q
+          )
+        );
+        clearTimeout(countdownTimerRef.current!);
+      };
+
+      mediaRecorderRef.current.start();
       setQuestionsWithAudio((prev) =>
         prev.map((q, i) =>
           i === index
-            ? {
-                ...q,
-                audioURL,
-                audioBlob,
-                isRecording: false,
-                timeRemaining: 0,
-              }
+            ? { ...q, isRecording: true, timeRemaining: MAX_RECORDING_TIME }
             : q
         )
       );
-      clearTimeout(countdownTimerRef.current!);
-    };
 
-    mediaRecorderRef.current.start();
-    setQuestionsWithAudio((prev) =>
-      prev.map((q, i) =>
-        i === index
-          ? { ...q, isRecording: true, timeRemaining: MAX_RECORDING_TIME }
-          : q
-      )
-    );
-
-    startCountdownTimer(index);
+      startCountdownTimer(index);
+    } catch (error) {
+      console.error('Recording error:', error);
+      // Handle the error appropriately
+    }
   };
 
   const startCountdownTimer = (index: number) => {
@@ -264,7 +281,6 @@ export default function IndexPage() {
                     {item.transcript && (
                       <div className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                         <div className="space-y-3">
-                          {/* 🔥 Scores Section */}
                           <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                             📊 Scores:
                           </div>
