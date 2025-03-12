@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
 
-interface AudioRecorderHook {
+type AudioRecorderHook = {
   isRecording: boolean;
   audioURL: string | null;
   startRecording: () => void;
   stopRecording: () => void;
-}
+};
 
 const useAudioRecorder = (): AudioRecorderHook => {
   const [isRecording, setIsRecording] = useState(false);

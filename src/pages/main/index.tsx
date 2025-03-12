@@ -77,11 +77,11 @@ export default function IndexPage() {
         ? 'audio/webm;codecs=opus'
         : 'audio/mp3';
 
-      console.log('Using mime type:', mimeType); // Debug log
+      console.log('Using mime type:', mimeType);
 
       mediaRecorderRef.current = new MediaRecorder(stream, {
         mimeType,
-        audioBitsPerSecond: 128000, // Specify a reasonable bitrate
+        audioBitsPerSecond: 128000,
       });
 
       audioChunksRef.current = [];
@@ -124,7 +124,6 @@ export default function IndexPage() {
       startCountdownTimer(index);
     } catch (error) {
       console.error('Recording error:', error);
-      // Handle the error appropriately
     }
   };
 
@@ -175,17 +174,17 @@ export default function IndexPage() {
         const result = analysisResults.find((r) => r.question === q.question);
 
         if (!result || typeof result.feedback !== 'object') {
-          return q; // ✅ Skip if feedback is missing or invalid
+          return q;
         }
 
         return {
           ...q,
           transcript: result.transcript,
           feedback: {
-            clarity: result.feedback.clarity ?? 0, // ✅ Extract clarity score
-            structure: result.feedback.structure ?? 0, // ✅ Extract structure score
-            communication: result.feedback.communication ?? 0, // ✅ Extract communication score
-            feedback: result.feedback.feedback ?? 'No feedback available', // ✅ Extract actual text feedback
+            clarity: result.feedback.clarity ?? 0,
+            structure: result.feedback.structure ?? 0,
+            communication: result.feedback.communication ?? 0,
+            feedback: result.feedback.feedback ?? 'No feedback available',
           },
         };
       })
