@@ -29,7 +29,9 @@ const useAudioRecorder = (): AudioRecorderHook => {
     };
 
     mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' }); // WAV works better for metadata
+      const audioBlob = new Blob(audioChunksRef.current, {
+        type: 'audio/webm',
+      });
       const url = URL.createObjectURL(audioBlob);
 
       setAudioURL(url);
