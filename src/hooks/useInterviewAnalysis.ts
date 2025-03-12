@@ -21,8 +21,11 @@ export default function useInterviewAnalysis() {
     try {
       const analysisPromises = questionsWithAudio.map(async (item, index) => {
         if (!item.audioBlob) return null;
-
         const formData = new FormData();
+
+        console.log('Recorded Blob:', item.audioBlob);
+        console.log('Blob Type:', item.audioBlob?.type);
+        console.log('Blob Size:', item.audioBlob?.size);
 
         formData.append('file', item.audioBlob, `question_${index}.webm`);
         // this sends request to Deepgram for transcription
@@ -30,7 +33,10 @@ export default function useInterviewAnalysis() {
           'https://api.deepgram.com/v1/listen?punctuate=true&model=general&detect_language=true',
           {
             method: 'POST',
-            headers: { Authorization: `Token ${deepgramApiKey}` },
+            headers: {
+              Authorization: `Token ${deepgramApiKey}`,
+              'Content-Type': 'audio/webm',
+            },
             body: formData,
           }
         );

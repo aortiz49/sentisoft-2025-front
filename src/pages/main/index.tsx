@@ -73,11 +73,9 @@ export default function IndexPage() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      const mimeType = MediaRecorder.isTypeSupported(
-        'audio/mp4;codecs=mp4a.40.2'
-      )
-        ? 'audio/mp4;codecs=mp4a.40.2'
-        : 'audio/webm;codecs=opus';
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : 'audio/mp3';
 
       console.log('Using mime type:', mimeType); // Debug log
 
