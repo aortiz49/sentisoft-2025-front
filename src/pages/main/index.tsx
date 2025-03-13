@@ -282,13 +282,9 @@ export default function IndexPage() {
     }
   }, [email]);
 
-  useEffect(() => {
-    console.log(submitted);
-  }, [submitted]);
-
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-30">
+      <section className="flex flex-col items-center justify-center gap-8 py-8 md:py-10">
         {!started && !isLoading && (
           <div className="inline-block max-w-lg text-center justify-center">
             <span className={title()}>Tech Skills Open Doors.&nbsp;</span>
@@ -637,7 +633,7 @@ export default function IndexPage() {
           )
         )}
         {viewedFeedback && !finishedSurvey && (
-          <div className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-30">
+          <div className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-20">
             <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
               Please leave your feedback below
             </h1>
@@ -671,7 +667,7 @@ export default function IndexPage() {
           </div>
         )}
         {finishedSurvey && (
-          <div className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-30">
+          <div className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-20">
             <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
               Thank you for your feedback!
             </h1>
