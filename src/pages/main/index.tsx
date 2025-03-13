@@ -3,6 +3,7 @@ import { Button } from '@heroui/button';
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardBody } from '@heroui/card';
 import { Input } from '@heroui/input';
+import { Textarea } from '@heroui/input';
 import { Form } from '@heroui/form';
 import { Spinner } from '@heroui/spinner';
 
@@ -53,7 +54,8 @@ export default function IndexPage() {
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentAnalysisIndex, setCurrentAnalysisIndex] = useState(0);
-
+  const [viewedFeedback, setViewedFeedback] = useState(false);
+  const [feedback, setFeedback] = useState('');
   const { isAnalyzing, analyzeInterview } = useInterviewAnalysis();
 
   const handleStart = () => {
@@ -79,10 +81,7 @@ export default function IndexPage() {
   };
 
   const startSurvey = () => {
-    setStarted(false);
-    setSubmitted(false);
-    setCurrentQuestionIndex(0);
-    setCurrentAnalysisIndex(0);
+    setViewedFeedback(true);
   };
 
   const startRecording = async (index: number) => {
@@ -313,239 +312,274 @@ export default function IndexPage() {
         ) : (
           questionsWithAudio.length > 0 && (
             <>
-              <Card
-                isBlurred
-                className="border-none bg-background/60 dark:bg-default-100/50 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]"
-                shadow="sm"
-              >
-                {isAnalyzing ? (
-                  <div className="flex justify-center items-center min-h-[200px]">
-                    <Spinner
-                      classNames={{ label: 'text-foreground mt-4' }}
-                      color="secondary"
-                      size="lg"
-                      variant="wave"
-                    />
-                  </div>
-                ) : (
-                  <CardBody className="p-8 max-h-[750px] ">
-                    <div className="flex flex-col gap-4 lg:overflow-y-auto">
-                      <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
-                        {submitted
-                          ? 'Behavioral Interview Analysis'
-                          : 'Behavioral Interview Questions'}
-                      </h1>
-                      {!submitted && (
-                        <div className="flex flex-col gap-2">
-                          <p className="text-foreground/80 font-medium text-yellow-500">
-                            You have 3 attempts to record your answer for each
-                            question. ⏳
-                          </p>
-                          {questionsWithAudio[currentQuestionIndex] && (
-                            <div
-                              key={currentQuestionIndex}
-                              className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none"
-                            >
-                              <p className="text-foreground/80 font-medium text-purple-400">
-                                • Question [{currentQuestionIndex + 1} of{' '}
-                                {questionsWithAudio.length}]:{' '}
-                                {questionsWithAudio[currentQuestionIndex]
-                                  .retryCount <= 2 && (
-                                  <span className="text-sm font-mono text-green-500">
-                                    {2 -
-                                      questionsWithAudio[currentQuestionIndex]
-                                        .retryCount +
-                                      1}{' '}
-                                    attempts left
-                                  </span>
-                                )}
-                              </p>
-
-                              <p className="text-foreground/90 whitespace-normal break-words w-full">
-                                {
-                                  questionsWithAudio[currentQuestionIndex]
-                                    .question
-                                }
-                              </p>
-                              <div className="flex flex-wrap gap-2 mt-2 items-center">
-                                <Button
-                                  className={`w-full sm:w-auto 
-    ${questionsWithAudio[currentQuestionIndex].isRecording ? 'bg-red-500' : 'bg-green-500'}`}
-                                  isDisabled={
-                                    questionsWithAudio[currentQuestionIndex]
-                                      .retryCount > 2
-                                  }
-                                  radius="full"
-                                  onPress={() =>
-                                    questionsWithAudio[currentQuestionIndex]
-                                      .isRecording
-                                      ? stopRecording(currentQuestionIndex)
-                                      : startRecording(currentQuestionIndex)
-                                  }
-                                >
+              {!viewedFeedback && (
+                <Card
+                  isBlurred
+                  className="border-none bg-background/60 dark:bg-default-100/50 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]"
+                  shadow="sm"
+                >
+                  {isAnalyzing ? (
+                    <div className="flex justify-center items-center min-h-[200px]">
+                      <Spinner
+                        classNames={{ label: 'text-foreground mt-4' }}
+                        color="secondary"
+                        size="lg"
+                        variant="wave"
+                      />
+                    </div>
+                  ) : (
+                    <CardBody className="p-8 max-h-[750px] ">
+                      <div className="flex flex-col gap-4 lg:overflow-y-auto">
+                        <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
+                          {submitted
+                            ? 'Behavioral Interview Analysis'
+                            : 'Behavioral Interview Questions'}
+                        </h1>
+                        {!submitted && (
+                          <div className="flex flex-col gap-2">
+                            <p className="text-foreground/80 font-medium text-yellow-500">
+                              You have 3 attempts to record your answer for each
+                              question. ⏳
+                            </p>
+                            {questionsWithAudio[currentQuestionIndex] && (
+                              <div
+                                key={currentQuestionIndex}
+                                className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none"
+                              >
+                                <p className="text-foreground/80 font-medium text-purple-400">
+                                  • Question [{currentQuestionIndex + 1} of{' '}
+                                  {questionsWithAudio.length}]:{' '}
                                   {questionsWithAudio[currentQuestionIndex]
-                                    .isRecording
-                                    ? 'Stop Recording'
-                                    : 'Record Answer'}
-                                </Button>
-                                {questionsWithAudio[currentQuestionIndex]
-                                  .isRecording && (
-                                  <span className="text-sm font-mono text-red-500">
-                                    ⏳ Time remaining:{' '}
-                                    {
-                                      questionsWithAudio[currentQuestionIndex]
-                                        .timeRemaining
-                                    }
-                                    s
-                                  </span>
-                                )}
-                                <div>
-                                  {questionsWithAudio[currentQuestionIndex]
-                                    .retryCount > 2 && (
-                                    <span className="text-sm font-mono text-red-500">
-                                      You have reached the maximum number of
-                                      retries.
+                                    .retryCount <= 2 && (
+                                    <span className="text-sm font-mono text-green-500">
+                                      {2 -
+                                        questionsWithAudio[currentQuestionIndex]
+                                          .retryCount +
+                                        1}{' '}
+                                      attempts left
                                     </span>
                                   )}
+                                </p>
+
+                                <p className="text-foreground/90 whitespace-normal break-words w-full">
+                                  {
+                                    questionsWithAudio[currentQuestionIndex]
+                                      .question
+                                  }
+                                </p>
+                                <div className="flex flex-wrap gap-2 mt-2 items-center">
+                                  <Button
+                                    className={`w-full sm:w-auto 
+    ${questionsWithAudio[currentQuestionIndex].isRecording ? 'bg-red-500' : 'bg-green-500'}`}
+                                    isDisabled={
+                                      questionsWithAudio[currentQuestionIndex]
+                                        .retryCount > 2
+                                    }
+                                    radius="full"
+                                    onPress={() =>
+                                      questionsWithAudio[currentQuestionIndex]
+                                        .isRecording
+                                        ? stopRecording(currentQuestionIndex)
+                                        : startRecording(currentQuestionIndex)
+                                    }
+                                  >
+                                    {questionsWithAudio[currentQuestionIndex]
+                                      .isRecording
+                                      ? 'Stop Recording'
+                                      : 'Record Answer'}
+                                  </Button>
+                                  {questionsWithAudio[currentQuestionIndex]
+                                    .isRecording && (
+                                    <span className="text-sm font-mono text-red-500">
+                                      ⏳ Time remaining:{' '}
+                                      {
+                                        questionsWithAudio[currentQuestionIndex]
+                                          .timeRemaining
+                                      }
+                                      s
+                                    </span>
+                                  )}
+                                  <div>
+                                    {questionsWithAudio[currentQuestionIndex]
+                                      .retryCount > 2 && (
+                                      <span className="text-sm font-mono text-red-500">
+                                        You have reached the maximum number of
+                                        retries.
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                {questionsWithAudio[currentQuestionIndex]
+                                  .audioURL && (
+                                  <CustomAudioPlayer
+                                    audioURL={
+                                      questionsWithAudio[currentQuestionIndex]
+                                        .audioURL
+                                    }
+                                  />
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {submitted && (
+                          <div className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+                            <div className="space-y-3">
+                              <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                📊 Scores:
+                              </div>
+                              <div className="grid grid-cols-3 gap-4 text-center">
+                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                    Clarity
+                                  </span>
+                                  <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                                    {
+                                      questionsWithAudio[currentAnalysisIndex]
+                                        .feedback?.clarity
+                                    }
+                                    /10
+                                  </span>
+                                </div>
+                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                    Structure
+                                  </span>
+                                  <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                                    {
+                                      questionsWithAudio[currentAnalysisIndex]
+                                        .feedback?.structure
+                                    }
+                                    /10
+                                  </span>
+                                </div>
+                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                    Communication
+                                  </span>
+                                  <span className="text-xl font-bold text-red-600 dark:text-red-400">
+                                    {
+                                      questionsWithAudio[currentAnalysisIndex]
+                                        .feedback?.communication
+                                    }
+                                    /10
+                                  </span>
                                 </div>
                               </div>
-                              {questionsWithAudio[currentQuestionIndex]
-                                .audioURL && (
-                                <CustomAudioPlayer
-                                  audioURL={
-                                    questionsWithAudio[currentQuestionIndex]
-                                      .audioURL
-                                  }
-                                />
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      {submitted && (
-                        <div className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-                          <div className="space-y-3">
-                            <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                              📊 Scores:
-                            </div>
-                            <div className="grid grid-cols-3 gap-4 text-center">
-                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                  Clarity
+                              <div>
+                                <span className="font-medium text-gray-700 dark:text-gray-300">
+                                  Feedback:
                                 </span>
-                                <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                                <p className="mt-1 text-gray-600 dark:text-gray-400">
                                   {
                                     questionsWithAudio[currentAnalysisIndex]
-                                      .feedback?.clarity
+                                      .feedback?.feedback
                                   }
-                                  /10
-                                </span>
+                                </p>
                               </div>
-                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                  Structure
-                                </span>
-                                <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                                  {
-                                    questionsWithAudio[currentAnalysisIndex]
-                                      .feedback?.structure
-                                  }
-                                  /10
-                                </span>
-                              </div>
-                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                  Communication
-                                </span>
-                                <span className="text-xl font-bold text-red-600 dark:text-red-400">
-                                  {
-                                    questionsWithAudio[currentAnalysisIndex]
-                                      .feedback?.communication
-                                  }
-                                  /10
-                                </span>
-                              </div>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-700 dark:text-gray-300">
-                                Feedback:
-                              </span>
-                              <p className="mt-1 text-gray-600 dark:text-gray-400">
-                                {
-                                  questionsWithAudio[currentAnalysisIndex]
-                                    .feedback?.feedback
-                                }
-                              </p>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex justify-end mt-6">
-                      {!submitted ? (
-                        <Button
-                          className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
-                          isDisabled={isAnalyzing}
-                          onPress={
-                            currentQuestionIndex ===
-                            questionsWithAudio.length - 1
-                              ? handleSubmit
-                              : handleNext
-                          }
-                        >
-                          {isAnalyzing
-                            ? 'Analyzing...'
-                            : currentQuestionIndex ===
-                                questionsWithAudio.length - 1
-                              ? 'Submit'
-                              : 'Next'}
-                        </Button>
-                      ) : (
-                        <div className="flex flex-col sm:flex-row gap-4 sm:justify-between w-full">
-                          {currentAnalysisIndex > 0 && (
-                            <Button
-                              className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg w-full sm:w-auto"
-                              onPress={() =>
-                                setCurrentAnalysisIndex(
-                                  currentAnalysisIndex - 1
-                                )
-                              }
-                            >
-                              Previous analysis
-                            </Button>
-                          )}
+                        )}
+                      </div>
+                      <div className="flex justify-end mt-6">
+                        {!submitted ? (
                           <Button
-                            className={`shadow-lg w-full sm:w-auto sm:ml-auto ${
-                              currentAnalysisIndex === 2
-                                ? 'bg-gradient-to-tr from-green-400 to-green-600'
-                                : 'bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8]'
-                            } 
-                            text-white`}
-                            onPress={() => {
-                              if (
-                                currentAnalysisIndex <
-                                questionsWithAudio.length - 1
-                              ) {
-                                setCurrentAnalysisIndex(
-                                  currentAnalysisIndex + 1
-                                );
-                              } else {
-                                startSurvey();
-                              }
-                            }}
+                            className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
+                            isDisabled={isAnalyzing}
+                            onPress={
+                              currentQuestionIndex ===
+                              questionsWithAudio.length - 1
+                                ? handleSubmit
+                                : handleNext
+                            }
                           >
-                            {currentAnalysisIndex == 2
-                              ? 'Continue to feedback survey'
-                              : 'Next analysis'}
+                            {isAnalyzing
+                              ? 'Analyzing...'
+                              : currentQuestionIndex ===
+                                  questionsWithAudio.length - 1
+                                ? 'Submit'
+                                : 'Next'}
                           </Button>
-                        </div>
-                      )}
-                    </div>
-                  </CardBody>
-                )}
-              </Card>
+                        ) : (
+                          <div className="flex flex-col sm:flex-row gap-4 sm:justify-between w-full">
+                            {currentAnalysisIndex > 0 && (
+                              <Button
+                                className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg w-full sm:w-auto"
+                                onPress={() =>
+                                  setCurrentAnalysisIndex(
+                                    currentAnalysisIndex - 1
+                                  )
+                                }
+                              >
+                                Previous analysis
+                              </Button>
+                            )}
+                            <Button
+                              className={`shadow-lg w-full sm:w-auto sm:ml-auto ${
+                                currentAnalysisIndex === 2
+                                  ? 'bg-gradient-to-tr from-green-400 to-green-600'
+                                  : 'bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8]'
+                              } 
+                            text-white`}
+                              onPress={() => {
+                                if (
+                                  currentAnalysisIndex <
+                                  questionsWithAudio.length - 1
+                                ) {
+                                  setCurrentAnalysisIndex(
+                                    currentAnalysisIndex + 1
+                                  );
+                                } else {
+                                  startSurvey();
+                                }
+                              }}
+                            >
+                              {currentAnalysisIndex == 2
+                                ? 'Continue to feedback survey'
+                                : 'Next analysis'}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </CardBody>
+                  )}
+                </Card>
+              )}
             </>
           )
+        )}
+        {true && (
+          <div className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-30">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
+              Please leave your feedback below
+            </h1>
+            <p className="text-foreground/80 font-medium text-yellow-500">
+              We&apos;d love to hear from you!
+            </p>
+            <Form className="flex flex-col gap-4 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]">
+              <Textarea
+                isRequired
+                description="This feedback will help us improve the interview experience for future users."
+                label="Feedback"
+                labelPlacement="outside"
+                name="feedback"
+                placeholder="What did you think of the interview?"
+                onChange={(e) => setFeedback(e.target.value)}
+              />
+              <Button
+                className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
+                isDisabled={feedback.length == 0}
+                radius="full"
+                size="lg"
+                variant="shadow"
+                onPress={() => {
+                  console.log(feedback);
+                }}
+              >
+                <p className="leading-none">Submit survey</p>
+              </Button>
+            </Form>
+          </div>
         )}
       </section>
     </DefaultLayout>
