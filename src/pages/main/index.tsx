@@ -585,11 +585,15 @@ export default function IndexPage() {
                             {currentAnalysisIndex > 0 && (
                               <Button
                                 className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg w-full sm:w-auto"
-                                onPress={() =>
+                                onPress={() => {
+                                  window.scrollTo({
+                                    top: 0,
+                                    behavior: 'smooth',
+                                  });
                                   setCurrentAnalysisIndex(
                                     currentAnalysisIndex - 1
-                                  )
-                                }
+                                  );
+                                }}
                               >
                                 Previous analysis
                               </Button>
@@ -602,6 +606,10 @@ export default function IndexPage() {
                               } 
                             text-white`}
                               onPress={() => {
+                                window.scrollTo({
+                                  top: 0,
+                                  behavior: 'smooth',
+                                });
                                 if (
                                   currentAnalysisIndex <
                                   questionsWithAudio.length - 1
