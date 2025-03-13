@@ -207,13 +207,21 @@ export default function IndexPage() {
     setQuestionsWithAudio((prev) =>
       prev.map((q) => ({ ...q, timeRemaining: 0 }))
     );
-    addToast({
-      title: 'Thanks for your submission!',
-      description: 'Your results will be available shortly.',
-      color: 'success',
-      timeout: 7000,
-      shouldShowTimeoutProgress: true,
-    });
+
+    let isToastActive = true; // Local flag to control the toast loop
+
+    const showToastLoop = () => {
+      if (!isToastActive) return;
+      addToast({
+        title: 'Analyzing your submission...',
+        description: 'Please wait while we process your results.',
+        color: 'success',
+        timeout: 8000,
+        shouldShowTimeoutProgress: true,
+      });
+    };
+
+    showToastLoop();
 
     const analysisResults: AnalysisResult[] = await analyzeInterview(
       questionsWithAudio.map((q) => ({
@@ -221,6 +229,8 @@ export default function IndexPage() {
         audioBlob: q.audioBlob ?? null,
       }))
     );
+
+    isToastActive = false; // Stop the toast loop when analysis is done
 
     setQuestionsWithAudio((prev) =>
       prev.map((q) => {
@@ -250,7 +260,7 @@ export default function IndexPage() {
     setIsLoading(true);
     setTimeout(() => {
       handleStart();
-    }, 500);
+    }, 1000);
   };
 
   const handleSurveySubmit = (event: React.FormEvent) => {
@@ -325,6 +335,7 @@ export default function IndexPage() {
             <Spinner
               classNames={{ label: 'text-foreground mt-4' }}
               color="secondary"
+              label="Generating interview questions..."
               size="lg"
               variant="wave"
             />
