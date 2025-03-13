@@ -8,7 +8,8 @@ import { Form } from '@heroui/form';
 import { Spinner } from '@heroui/spinner';
 import { Snippet } from '@heroui/snippet';
 import { Chip } from '@heroui/chip';
-import { addToast, ToastProvider } from '@heroui/toast';
+import { addToast } from '@heroui/toast';
+import { Pagination } from '@heroui/pagination';
 
 import CustomAudioPlayer from './CustomAudioPlayer';
 import { questions } from './config';
@@ -338,13 +339,27 @@ export default function IndexPage() {
                       />
                     </div>
                   ) : (
-                    <CardBody className="p-8 max-h-[750px] ">
+                    <CardBody className="p-8 max-h-[750px] overflow-x-hidden">
                       <div className="flex flex-col gap-4 lg:overflow-y-auto">
                         <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
                           {submitted
                             ? 'Behavioral Interview Analysis'
                             : 'Behavioral Interview Questions'}
                         </h1>
+                        <Pagination
+                          isDisabled
+                          className="max-w-full"
+                          page={
+                            submitted
+                              ? currentAnalysisIndex + 1
+                              : currentQuestionIndex + 1
+                          }
+                          total={
+                            submitted
+                              ? questionsWithAudio.length
+                              : questionsWithAudio.length + 1
+                          }
+                        />
                         {!submitted && (
                           <div className="flex flex-col gap-8">
                             <p className="text-foreground/80 font-medium text-yellow-500">
@@ -356,12 +371,21 @@ export default function IndexPage() {
                                 key={currentQuestionIndex}
                                 className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none gap-2"
                               >
-                                <p className="text-foreground/80 font-medium text-purple-400">
-                                  <Chip color="warning" variant="dot">
-                                    Question ({currentQuestionIndex + 1} of{' '}
-                                    {questionsWithAudio.length}):
-                                  </Chip>{' '}
-                                </p>
+                                <Snippet
+                                  classNames={{
+                                    base: 'w-full',
+                                  }}
+                                  variant="bordered"
+                                >
+                                  {
+                                    <span className="text-foreground/80 font-medium text-purple-400 break-words whitespace-normal">
+                                      {
+                                        questionsWithAudio[currentQuestionIndex]
+                                          .question
+                                      }
+                                    </span>
+                                  }
+                                </Snippet>
                                 {questionsWithAudio[currentQuestionIndex]
                                   .retryCount <= 2 && (
                                   <span className="text-sm font-mono text-green-500">
@@ -372,18 +396,6 @@ export default function IndexPage() {
                                     attempts left
                                   </span>
                                 )}
-                                <Snippet
-                                  variant="bordered"
-                                  classNames={{
-                                    base: 'w-full',
-                                  }}
-                                >
-                                  {
-                                    questionsWithAudio[currentQuestionIndex]
-                                      .question
-                                  }
-                                </Snippet>
-
                                 <div className="flex flex-wrap gap-2 mt-2 items-center">
                                   <Button
                                     className={`w-full sm:w-auto 
