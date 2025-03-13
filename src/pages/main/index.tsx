@@ -249,7 +249,6 @@ export default function IndexPage() {
                     <p className="text-foreground/90 whitespace-normal break-words w-full">
                       {item.question}
                     </p>
-
                     <div className="flex flex-wrap gap-2 mt-2 items-center">
                       <Button
                         className={
@@ -270,11 +269,9 @@ export default function IndexPage() {
                         </span>
                       )}
                     </div>
-
                     {item.audioURL && (
                       <CustomAudioPlayer audioURL={item.audioURL} />
                     )}
-
                     {item.transcript && (
                       <div className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                         <div className="space-y-3">
@@ -307,7 +304,6 @@ export default function IndexPage() {
                               </span>
                             </div>
                           </div>
-
                           <div>
                             <span className="font-medium text-gray-700 dark:text-gray-300">
                               Feedback:

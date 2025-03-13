@@ -13,6 +13,7 @@ export default function CustomAudioPlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -22,39 +23,65 @@ export default function CustomAudioPlayer({
     setIsPlaying(false);
     setElapsedTime(0);
     setDuration(0);
+    setIsLoading(true);
 
     const updateTime = () => setElapsedTime(audio.currentTime);
 
     const handleLoadedMetadata = () => {
-      console.log('Metadata loaded, duration:', audio.duration);
-      setDuration(audio.duration);
+      if (audio.duration && isFinite(audio.duration)) {
+        console.log('Metadata loaded, duration:', audio.duration);
+        setDuration(audio.duration);
+        setIsLoading(false);
+      }
     };
 
-    // Create a new audio element to force metadata loading
-    const loadAudio = () => {
-      const tempAudio = new Audio(audioURL);
-      tempAudio.addEventListener('loadedmetadata', () => {
-        setDuration(tempAudio.duration);
-        console.log('Temp audio duration:', tempAudio.duration);
-      });
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setElapsedTime(0);
     };
+
+    // Add a small delay to ensure the audio element has time to process the blob
+    setTimeout(() => {
+      // Handle the case where metadata doesn't load automatically
+      if (audio.readyState >= 2 && isFinite(audio.duration)) {
+        setDuration(audio.duration);
+        setIsLoading(false);
+      } else {
+        // Try to manually calculate duration by loading the full file
+        // This is especially helpful for blob URLs
+        fetch(audioURL)
+          .then((response) => response.blob())
+          .then((blob) => {
+            // For a typical audio recording at 128kbps
+            // Rough estimate: 1 second ≈ 16KB (128kbps / 8 = 16KBps)
+            const estimatedDuration = blob.size / 16000;
+            console.log(
+              'Estimated duration from blob size:',
+              estimatedDuration
+            );
+            setDuration(estimatedDuration);
+            setIsLoading(false);
+          })
+          .catch((err) => {
+            console.error('Error estimating duration:', err);
+            setIsLoading(false);
+          });
+      }
+    }, 500);
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    audio.addEventListener('canplaythrough', handleLoadedMetadata);
+    audio.addEventListener('durationchange', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
 
-    // Try to get duration directly
-    if (audio.readyState > 0) {
-      handleLoadedMetadata();
-    } else {
-      // Fallback method
-      loadAudio();
-    }
+    // Force load the audio
+    audio.load();
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.removeEventListener('canplaythrough', handleLoadedMetadata);
+      audio.removeEventListener('durationchange', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
     };
   }, [audioURL]);
 
@@ -70,6 +97,11 @@ export default function CustomAudioPlayer({
   };
 
   const formatTime = (seconds: number) => {
+    // Ensure seconds is a valid number
+    if (!isFinite(seconds) || isNaN(seconds)) {
+      seconds = 0;
+    }
+
     seconds = Math.max(0, seconds || 0);
     const minutes = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -79,19 +111,24 @@ export default function CustomAudioPlayer({
 
   return (
     <div className="flex items-center gap-2 mt-2">
-      <Button className="bg-blue-500" radius="full" onPress={togglePlayback}>
+      <Button
+        className="bg-blue-500"
+        isDisabled={isLoading}
+        radius="full"
+        onPress={togglePlayback}
+      >
         {isPlaying ? 'Pause' : 'Play'}
       </Button>
       <span className="text-sm font-mono">
-        {formatTime(elapsedTime)} / {formatTime(duration)}
+        {isLoading
+          ? 'Loading...'
+          : `${formatTime(elapsedTime)} / ${formatTime(duration)}`}
       </span>
       <audio
         ref={audioRef}
         preload="metadata"
         src={audioURL}
-        onLoadedMetadata={() => {
-          if (audioRef.current) setDuration(audioRef.current.duration);
-        }}
+        onEnded={() => setIsPlaying(false)}
       />
     </div>
   );
