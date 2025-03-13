@@ -241,6 +241,7 @@ export default function IndexPage() {
         if (!result || typeof result.feedback !== 'object') {
           return q;
         }
+        console.log(result.transcript);
 
         return {
           ...q,
@@ -258,8 +259,6 @@ export default function IndexPage() {
 
   const handleEmailSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-
-    console.log(sessionStorage.getItem('email'));
 
     setIsLoading(true);
     setTimeout(() => {
