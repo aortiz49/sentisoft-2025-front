@@ -6,6 +6,9 @@ import { Input } from '@heroui/input';
 import { Textarea } from '@heroui/input';
 import { Form } from '@heroui/form';
 import { Spinner } from '@heroui/spinner';
+import { Snippet } from '@heroui/snippet';
+import { Chip } from '@heroui/chip';
+import { addToast, ToastProvider } from '@heroui/toast';
 
 import CustomAudioPlayer from './CustomAudioPlayer';
 import { questions } from './config';
@@ -199,6 +202,13 @@ export default function IndexPage() {
     setQuestionsWithAudio((prev) =>
       prev.map((q) => ({ ...q, timeRemaining: 0 }))
     );
+    addToast({
+      title: 'Thanks for your submission!',
+      description: 'Your results will be available shortly.',
+      color: 'success',
+      timeout: 3000,
+      shouldShowTimeoutProgress: true,
+    });
 
     const analysisResults: AnalysisResult[] = await analyzeInterview(
       questionsWithAudio.map((q) => ({
@@ -336,37 +346,44 @@ export default function IndexPage() {
                             : 'Behavioral Interview Questions'}
                         </h1>
                         {!submitted && (
-                          <div className="flex flex-col gap-2">
+                          <div className="flex flex-col gap-8">
                             <p className="text-foreground/80 font-medium text-yellow-500">
                               You have 3 attempts to record your answer for each
-                              question. ⏳
+                              question.
                             </p>
                             {questionsWithAudio[currentQuestionIndex] && (
                               <div
                                 key={currentQuestionIndex}
-                                className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none"
+                                className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none gap-2"
                               >
                                 <p className="text-foreground/80 font-medium text-purple-400">
-                                  • Question [{currentQuestionIndex + 1} of{' '}
-                                  {questionsWithAudio.length}]:{' '}
-                                  {questionsWithAudio[currentQuestionIndex]
-                                    .retryCount <= 2 && (
-                                    <span className="text-sm font-mono text-green-500">
-                                      {2 -
-                                        questionsWithAudio[currentQuestionIndex]
-                                          .retryCount +
-                                        1}{' '}
-                                      attempts left
-                                    </span>
-                                  )}
+                                  <Chip color="warning" variant="dot">
+                                    Question ({currentQuestionIndex + 1} of{' '}
+                                    {questionsWithAudio.length}):
+                                  </Chip>{' '}
                                 </p>
-
-                                <p className="text-foreground/90 whitespace-normal break-words w-full">
+                                {questionsWithAudio[currentQuestionIndex]
+                                  .retryCount <= 2 && (
+                                  <span className="text-sm font-mono text-green-500">
+                                    {2 -
+                                      questionsWithAudio[currentQuestionIndex]
+                                        .retryCount +
+                                      1}{' '}
+                                    attempts left
+                                  </span>
+                                )}
+                                <Snippet
+                                  variant="bordered"
+                                  classNames={{
+                                    base: 'w-full',
+                                  }}
+                                >
                                   {
                                     questionsWithAudio[currentQuestionIndex]
                                       .question
                                   }
-                                </p>
+                                </Snippet>
+
                                 <div className="flex flex-wrap gap-2 mt-2 items-center">
                                   <Button
                                     className={`w-full sm:w-auto 
@@ -548,7 +565,7 @@ export default function IndexPage() {
             </>
           )
         )}
-        {true && (
+        {viewedFeedback && (
           <div className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-30">
             <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
               Please leave your feedback below
