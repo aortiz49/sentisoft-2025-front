@@ -369,12 +369,8 @@ export default function IndexPage() {
                               </p>
                               <div className="flex flex-wrap gap-2 mt-2 items-center">
                                 <Button
-                                  className={
-                                    questionsWithAudio[currentQuestionIndex]
-                                      .isRecording
-                                      ? 'bg-red-500'
-                                      : 'bg-green-500'
-                                  }
+                                  className={`w-full sm:w-auto 
+    ${questionsWithAudio[currentQuestionIndex].isRecording ? 'bg-red-500' : 'bg-green-500'}`}
                                   isDisabled={
                                     questionsWithAudio[currentQuestionIndex]
                                       .retryCount > 2
