@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import { Button } from '@heroui/button';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardBody } from '@heroui/card';
 import { Input } from '@heroui/input';
 import { Form } from '@heroui/form';
@@ -201,6 +201,20 @@ export default function IndexPage() {
     }, 500);
   };
 
+  useEffect(() => {
+    const savedEmail = sessionStorage.getItem('email');
+
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (email) {
+      sessionStorage.setItem('email', email);
+    }
+  }, [email]);
+
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
@@ -236,7 +250,6 @@ export default function IndexPage() {
                 type="submit"
                 variant="shadow"
                 onPress={() => {
-                  console.log(email);
                   setEmail(email);
                 }}
               >
