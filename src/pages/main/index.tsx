@@ -34,6 +34,7 @@ export type QuestionWithAudio = {
   feedback?: FeedbackType;
   isRecording: boolean;
   timeRemaining?: number;
+  retryCount: number;
 };
 
 const MAX_RECORDING_TIME = 60;
@@ -62,6 +63,7 @@ export default function IndexPage() {
       audioBlob: null,
       isRecording: false,
       timeRemaining: MAX_RECORDING_TIME,
+      retryCount: 0,
     }));
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -151,7 +153,14 @@ export default function IndexPage() {
     clearInterval(countdownTimerRef.current!);
     setQuestionsWithAudio((prev) =>
       prev.map((q, i) =>
-        i === index ? { ...q, isRecording: false, timeRemaining: 0 } : q
+        i === index
+          ? {
+              ...q,
+              isRecording: false,
+              timeRemaining: 0,
+              retryCount: q.retryCount + 1,
+            }
+          : q
       )
     );
   };
@@ -284,15 +293,23 @@ export default function IndexPage() {
                   <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
                     Behavioral Interview Questions
                   </h1>
-
+                  <p className="text-foreground/80 font-medium text-yellow-500">
+                    You have 2 attempts to record your answer for each question.
+                    ⏳
+                  </p>
                   {questionsWithAudio.map((item, index) => (
                     <div
                       key={index}
                       className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none"
                     >
-                      <p className="text-foreground/80 font-medium">
-                        Question {index + 1}:
+                      <p className="text-foreground/80 font-medium text-purple-400">
+                        Question {index + 1}:{' '}
                       </p>
+                      {item.retryCount <= 2 && (
+                        <span className="text-sm font-mono text-green-500">
+                          {2 - item.retryCount + 1} attempts left
+                        </span>
+                      )}
                       <p className="text-foreground/90 whitespace-normal break-words w-full">
                         {item.question}
                       </p>
@@ -301,6 +318,7 @@ export default function IndexPage() {
                           className={
                             item.isRecording ? 'bg-red-500' : 'bg-green-500'
                           }
+                          isDisabled={item.retryCount > 2}
                           radius="full"
                           onPress={() =>
                             item.isRecording
@@ -317,6 +335,13 @@ export default function IndexPage() {
                             ⏳ Time remaining: {item.timeRemaining}s
                           </span>
                         )}
+                        <div>
+                          {item.retryCount > 2 && (
+                            <span className="text-sm font-mono text-red-500">
+                              You have reached the maximum number of retries.
+                            </span>
+                          )}
+                        </div>
                       </div>
                       {item.audioURL && (
                         <CustomAudioPlayer audioURL={item.audioURL} />
