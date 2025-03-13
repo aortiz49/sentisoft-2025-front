@@ -42,6 +42,7 @@ const MAX_RECORDING_TIME = 60;
 export default function IndexPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [started, setStarted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [questionsWithAudio, setQuestionsWithAudio] = useState<
     QuestionWithAudio[]
   >([]);
@@ -50,6 +51,7 @@ export default function IndexPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const { isAnalyzing, analyzeInterview } = useInterviewAnalysis();
 
@@ -71,6 +73,7 @@ export default function IndexPage() {
     setTimeout(() => {
       setIsLoading(false);
       setQuestionsWithAudio(selected);
+      setCurrentQuestionIndex(0);
     }, 1000);
   };
 
@@ -171,8 +174,21 @@ export default function IndexPage() {
     stream?.getTracks().forEach((track) => track.stop());
   };
 
+  const handleNext = async () => {
+    const isLastQuestion =
+      currentQuestionIndex === questionsWithAudio.length - 1;
+
+    if (isLastQuestion) {
+      await handleSubmit();
+      setSubmitted(true);
+    } else {
+      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+    }
+  };
+
   const handleSubmit = async () => {
     stopMicrophone();
+    setSubmitted(true);
     setQuestionsWithAudio((prev) =>
       prev.map((q) => ({ ...q, timeRemaining: 0 }))
     );
@@ -229,9 +245,13 @@ export default function IndexPage() {
     }
   }, [email]);
 
+  useEffect(() => {
+    console.log(submitted);
+  }, [submitted]);
+
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 mb-30">
+      <section className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-30">
         {!started && !isLoading && (
           <div className="inline-block max-w-lg text-center justify-center">
             <span className={title()}>Tech Skills Open Doors.&nbsp;</span>
@@ -244,7 +264,7 @@ export default function IndexPage() {
               Ace your next behavioral interview with AI-powered practice
               sessions.
             </div>
-            <Form onSubmit={handleEmailSubmit}>
+            <Form className="gap-4" onSubmit={handleEmailSubmit}>
               <Input
                 isRequired
                 className="max-w-[300px] self-center"
@@ -261,6 +281,7 @@ export default function IndexPage() {
                 className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
                 isLoading={isLoading}
                 radius="full"
+                size="lg"
                 type="submit"
                 variant="shadow"
                 onPress={() => {
@@ -283,126 +304,191 @@ export default function IndexPage() {
           </div>
         ) : (
           questionsWithAudio.length > 0 && (
-            <Card
-              isBlurred
-              className="border-none bg-background/60 dark:bg-default-100/50 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]"
-              shadow="sm"
-            >
-              <CardBody className="p-8 max-h-[750px] ">
-                <div className="flex flex-col gap-4 lg:overflow-y-auto">
-                  <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
-                    Behavioral Interview Questions
-                  </h1>
-                  <p className="text-foreground/80 font-medium text-yellow-500">
-                    You have 3 attempts to record your answer for each question.
-                    ⏳
-                  </p>
-                  {questionsWithAudio.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none"
-                    >
-                      <p className="text-foreground/80 font-medium text-purple-400">
-                        Question {index + 1}:{' '}
-                      </p>
-                      {item.retryCount <= 2 && (
-                        <span className="text-sm font-mono text-green-500">
-                          {2 - item.retryCount + 1} attempts left
-                        </span>
-                      )}
-                      <p className="text-foreground/90 whitespace-normal break-words w-full">
-                        {item.question}
-                      </p>
-                      <div className="flex flex-wrap gap-2 mt-2 items-center">
-                        <Button
-                          className={
-                            item.isRecording ? 'bg-red-500' : 'bg-green-500'
-                          }
-                          isDisabled={item.retryCount > 2}
-                          radius="full"
-                          onPress={() =>
-                            item.isRecording
-                              ? stopRecording(index)
-                              : startRecording(index)
-                          }
-                        >
-                          {item.isRecording
-                            ? 'Stop Recording'
-                            : 'Record Answer'}
-                        </Button>
-                        {item.isRecording && (
-                          <span className="text-sm font-mono text-red-500">
-                            ⏳ Time remaining: {item.timeRemaining}s
-                          </span>
-                        )}
-                        <div>
-                          {item.retryCount > 2 && (
-                            <span className="text-sm font-mono text-red-500">
-                              You have reached the maximum number of retries.
-                            </span>
+            <>
+              <Card
+                isBlurred
+                className="border-none bg-background/60 dark:bg-default-100/50 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]"
+                shadow="sm"
+              >
+                {isAnalyzing ? (
+                  <div className="flex justify-center items-center min-h-[200px]">
+                    <Spinner
+                      classNames={{ label: 'text-foreground mt-4' }}
+                      color="secondary"
+                      size="lg"
+                      variant="wave"
+                    />
+                  </div>
+                ) : (
+                  <CardBody className="p-8 max-h-[750px] ">
+                    <div className="flex flex-col gap-4 lg:overflow-y-auto">
+                      <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
+                        Behavioral Interview Questions
+                      </h1>
+                      {!submitted && (
+                        <div className="flex flex-col gap-2">
+                          <p className="text-foreground/80 font-medium text-yellow-500">
+                            You have 3 attempts to record your answer for each
+                            question. ⏳
+                          </p>
+                          {questionsWithAudio[currentQuestionIndex] && (
+                            <div
+                              key={currentQuestionIndex}
+                              className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none"
+                            >
+                              <p className="text-foreground/80 font-medium text-purple-400">
+                                • Question [{currentQuestionIndex + 1} of{' '}
+                                {questionsWithAudio.length}]:{' '}
+                                {questionsWithAudio[currentQuestionIndex]
+                                  .retryCount <= 2 && (
+                                  <span className="text-sm font-mono text-green-500">
+                                    {2 -
+                                      questionsWithAudio[currentQuestionIndex]
+                                        .retryCount +
+                                      1}{' '}
+                                    attempts left
+                                  </span>
+                                )}
+                              </p>
+
+                              <p className="text-foreground/90 whitespace-normal break-words w-full">
+                                {
+                                  questionsWithAudio[currentQuestionIndex]
+                                    .question
+                                }
+                              </p>
+                              <div className="flex flex-wrap gap-2 mt-2 items-center">
+                                <Button
+                                  className={
+                                    questionsWithAudio[currentQuestionIndex]
+                                      .isRecording
+                                      ? 'bg-red-500'
+                                      : 'bg-green-500'
+                                  }
+                                  isDisabled={
+                                    questionsWithAudio[currentQuestionIndex]
+                                      .retryCount > 2
+                                  }
+                                  radius="full"
+                                  onPress={() =>
+                                    questionsWithAudio[currentQuestionIndex]
+                                      .isRecording
+                                      ? stopRecording(currentQuestionIndex)
+                                      : startRecording(currentQuestionIndex)
+                                  }
+                                >
+                                  {questionsWithAudio[currentQuestionIndex]
+                                    .isRecording
+                                    ? 'Stop Recording'
+                                    : 'Record Answer'}
+                                </Button>
+                                {questionsWithAudio[currentQuestionIndex]
+                                  .isRecording && (
+                                  <span className="text-sm font-mono text-red-500">
+                                    ⏳ Time remaining:{' '}
+                                    {
+                                      questionsWithAudio[currentQuestionIndex]
+                                        .timeRemaining
+                                    }
+                                    s
+                                  </span>
+                                )}
+                                <div>
+                                  {questionsWithAudio[currentQuestionIndex]
+                                    .retryCount > 2 && (
+                                    <span className="text-sm font-mono text-red-500">
+                                      You have reached the maximum number of
+                                      retries.
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              {questionsWithAudio[currentQuestionIndex]
+                                .audioURL && (
+                                <CustomAudioPlayer
+                                  audioURL={
+                                    questionsWithAudio[currentQuestionIndex]
+                                      .audioURL
+                                  }
+                                />
+                              )}
+                            </div>
                           )}
                         </div>
-                      </div>
-                      {item.audioURL && (
-                        <CustomAudioPlayer audioURL={item.audioURL} />
                       )}
-                      {item.transcript && (
-                        <div className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-                          <div className="space-y-3">
-                            <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                              📊 Scores:
-                            </div>
-                            <div className="grid grid-cols-3 gap-4 text-center">
-                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                  Clarity
-                                </span>
-                                <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                                  {item.feedback?.clarity}/10
-                                </span>
+                      {questionsWithAudio[0].transcript &&
+                        questionsWithAudio.map((item, index) => (
+                          <div
+                            key={index}
+                            className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
+                          >
+                            <div className="space-y-3">
+                              <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                📊 Scores:
                               </div>
-                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                  Structure
-                                </span>
-                                <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                                  {item.feedback?.structure}/10
-                                </span>
+                              <div className="grid grid-cols-3 gap-4 text-center">
+                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                    Clarity
+                                  </span>
+                                  <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                                    {item.feedback?.clarity}
+                                    /10
+                                  </span>
+                                </div>
+                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                    Structure
+                                  </span>
+                                  <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                                    {item.feedback?.structure}
+                                    /10
+                                  </span>
+                                </div>
+                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                    Communication
+                                  </span>
+                                  <span className="text-xl font-bold text-red-600 dark:text-red-400">
+                                    {item.feedback?.communication}
+                                    /10
+                                  </span>
+                                </div>
                               </div>
-                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                  Communication
+                              <div>
+                                <span className="font-medium text-gray-700 dark:text-gray-300">
+                                  Feedback:
                                 </span>
-                                <span className="text-xl font-bold text-red-600 dark:text-red-400">
-                                  {item.feedback?.communication}/10
-                                </span>
+                                <p className="mt-1 text-gray-600 dark:text-gray-400">
+                                  {item.feedback?.feedback}
+                                </p>
                               </div>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-700 dark:text-gray-300">
-                                Feedback:
-                              </span>
-                              <p className="mt-1 text-gray-600 dark:text-gray-400">
-                                {item.feedback?.feedback}{' '}
-                              </p>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        ))}
                     </div>
-                  ))}
-                </div>
-                <div className="flex justify-end mt-6">
-                  <Button
-                    className="bg-blue-600 text-white"
-                    isDisabled={isAnalyzing}
-                    onPress={handleSubmit}
-                  >
-                    {isAnalyzing ? 'Analyzing...' : 'Submit'}
-                  </Button>
-                </div>
-              </CardBody>
-            </Card>
+                    <div className="flex justify-end mt-6">
+                      <Button
+                        className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
+                        isDisabled={isAnalyzing}
+                        onPress={
+                          currentQuestionIndex === questionsWithAudio.length - 1
+                            ? handleSubmit
+                            : handleNext
+                        }
+                      >
+                        {isAnalyzing
+                          ? 'Analyzing...'
+                          : currentQuestionIndex ===
+                              questionsWithAudio.length - 1
+                            ? 'Submit'
+                            : 'Next'}
+                      </Button>
+                    </div>
+                  </CardBody>
+                )}
+              </Card>
+            </>
           )
         )}
       </section>
