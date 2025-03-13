@@ -64,6 +64,8 @@ export default function IndexPage() {
       timeRemaining: MAX_RECORDING_TIME,
     }));
 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     setTimeout(() => {
       setIsLoading(false);
       setQuestionsWithAudio(selected);
