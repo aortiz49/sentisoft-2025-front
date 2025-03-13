@@ -285,16 +285,16 @@ export default function IndexPage() {
           questionsWithAudio.length > 0 && (
             <Card
               isBlurred
-              className="border-none bg-background/60 dark:bg-default-100/50 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8"
+              className="border-none bg-background/60 dark:bg-default-100/50 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]"
               shadow="sm"
             >
-              <CardBody className="p-8 max-h-[700px] ">
-                <div className="flex flex-col gap-4 overflow-y-auto">
+              <CardBody className="p-8 max-h-[750px] ">
+                <div className="flex flex-col gap-4 lg:overflow-y-auto">
                   <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
                     Behavioral Interview Questions
                   </h1>
                   <p className="text-foreground/80 font-medium text-yellow-500">
-                    You have 2 attempts to record your answer for each question.
+                    You have 3 attempts to record your answer for each question.
                     ⏳
                   </p>
                   {questionsWithAudio.map((item, index) => (
