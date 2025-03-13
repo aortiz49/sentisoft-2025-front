@@ -231,7 +231,7 @@ export default function IndexPage() {
 
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 mb-50">
+      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 mb-30">
         {!started && !isLoading && (
           <div className="inline-block max-w-lg text-center justify-center">
             <span className={title()}>Tech Skills Open Doors.&nbsp;</span>
@@ -288,8 +288,8 @@ export default function IndexPage() {
               className="border-none bg-background/60 dark:bg-default-100/50 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8"
               shadow="sm"
             >
-              <CardBody className="p-8">
-                <div className="flex flex-col gap-4">
+              <CardBody className="p-8 max-h-[700px] ">
+                <div className="flex flex-col gap-4 overflow-y-auto">
                   <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
                     Behavioral Interview Questions
                   </h1>
