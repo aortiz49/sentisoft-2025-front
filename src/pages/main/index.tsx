@@ -219,8 +219,8 @@ export default function IndexPage() {
             </div>
             <Form onSubmit={handleEmailSubmit}>
               <Input
-                className="max-w-[300px] self-center"
                 isRequired
+                className="max-w-[300px] self-center"
                 errorMessage="Please enter a valid email"
                 label="Email"
                 labelPlacement="outside"
@@ -234,12 +234,12 @@ export default function IndexPage() {
                 className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
                 isLoading={isLoading}
                 radius="full"
+                type="submit"
                 variant="shadow"
                 onPress={() => {
                   console.log(email);
                   setEmail(email);
                 }}
-                type="submit"
               >
                 <p className="leading-none">Start</p>
               </Button>
