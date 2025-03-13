@@ -56,7 +56,7 @@ export default function IndexPage() {
     setIsLoading(true);
     setStarted(true);
     const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 1).map((q) => ({
+    const selected = shuffled.slice(0, 3).map((q) => ({
       question: q,
       audioURL: null,
       audioBlob: null,
@@ -162,6 +162,9 @@ export default function IndexPage() {
 
   const handleSubmit = async () => {
     stopMicrophone();
+    setQuestionsWithAudio((prev) =>
+      prev.map((q) => ({ ...q, timeRemaining: 0 }))
+    );
 
     const analysisResults: AnalysisResult[] = await analyzeInterview(
       questionsWithAudio.map((q) => ({
