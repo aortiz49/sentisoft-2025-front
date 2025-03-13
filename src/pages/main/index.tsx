@@ -333,7 +333,7 @@ export default function IndexPage() {
                       <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
                         {submitted
                           ? 'Behavioral Interview Analysis'
-                          : 'Behavioral Interview Questions :ques'}
+                          : 'Behavioral Interview Questions'}
                       </h1>
                       {!submitted && (
                         <div className="flex flex-col gap-2">
