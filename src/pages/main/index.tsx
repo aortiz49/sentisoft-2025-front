@@ -3,7 +3,8 @@ import { Snippet } from '@heroui/snippet';
 import { Button } from '@heroui/button';
 import { useState, useRef } from 'react';
 import { Card, CardBody } from '@heroui/card';
-
+import { Input } from '@heroui/input';
+import { Form } from '@heroui/form';
 import CustomAudioPlayer from './CustomAudioPlayer';
 import { questions } from './config';
 
@@ -43,6 +44,7 @@ export default function IndexPage() {
   const [questionsWithAudio, setQuestionsWithAudio] = useState<
     QuestionWithAudio[]
   >([]);
+  const [email, setEmail] = useState('');
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -63,9 +65,9 @@ export default function IndexPage() {
     }));
 
     setTimeout(() => {
-      setQuestionsWithAudio(selected);
       setIsLoading(false);
       setRenderOption(false);
+      setQuestionsWithAudio(selected);
     }, 1000);
   };
 
@@ -191,6 +193,15 @@ export default function IndexPage() {
     );
   };
 
+  const handleEmailSubmit = (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent form from auto-submitting
+
+    setIsLoading(true); // Show loading state
+    setTimeout(() => {
+      handleStart(); // Call handleStart after 2 seconds
+    }, 2000);
+  };
+
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
@@ -206,24 +217,33 @@ export default function IndexPage() {
               Ace your next behavioral interview with AI-powered practice
               sessions.
             </div>
-          </div>
-        )}
-        {renderOption && (
-          <div className="mt-8">
-            <Snippet hideCopyButton hideSymbol variant="bordered">
-              <span>
-                Start your first interview{' '}
-                <Button
-                  className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg"
-                  isLoading={isLoading}
-                  radius="full"
-                  variant="shadow"
-                  onPress={handleStart}
-                >
-                  <p className="leading-none">Start</p>
-                </Button>
-              </span>
-            </Snippet>
+            <Form onSubmit={handleEmailSubmit}>
+              <Input
+                className="max-w-[300px] self-center"
+                isRequired
+                errorMessage="Please enter a valid email"
+                label="Email"
+                labelPlacement="outside"
+                name="email"
+                placeholder="Enter your email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Button
+                className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
+                isLoading={isLoading}
+                radius="full"
+                variant="shadow"
+                onPress={() => {
+                  console.log(email);
+                  setEmail(email);
+                }}
+                type="submit"
+              >
+                <p className="leading-none">Start</p>
+              </Button>
+            </Form>
           </div>
         )}
         {questionsWithAudio.length > 0 && (
