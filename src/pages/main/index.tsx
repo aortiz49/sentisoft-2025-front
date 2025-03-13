@@ -10,6 +10,7 @@ import { Snippet } from '@heroui/snippet';
 import { Skeleton } from '@heroui/skeleton';
 import { addToast } from '@heroui/toast';
 import { Pagination } from '@heroui/pagination';
+import { Slider } from '@heroui/slider';
 
 import CustomAudioPlayer from './CustomAudioPlayer';
 import { questions } from './config';
@@ -62,6 +63,7 @@ export default function IndexPage() {
   const [finishedSurvey, setFinishedSurvey] = useState(false);
   const [viewedFeedback, setViewedFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [rating, setRating] = useState(0);
   const { isAnalyzing, analyzeInterview } = useInterviewAnalysis();
 
   const handleStart = () => {
@@ -266,6 +268,9 @@ export default function IndexPage() {
   const handleSurveySubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setFinishedSurvey(true);
+
+    console.log(rating);
+    console.log(feedback);
   };
 
   useEffect(() => {
@@ -644,6 +649,37 @@ export default function IndexPage() {
               className="flex flex-col gap-4 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]"
               onSubmit={handleSurveySubmit}
             >
+              <Slider
+                classNames={{
+                  base: 'max-w-md pb-8',
+                  filler: 'bg-gradient-to-r from-primary-500 to-secondary-400',
+                  labelWrapper: 'mb-2',
+                  label: 'font-medium text-default-700 text-medium',
+                  value: 'font-medium text-default-500 text-small',
+                  thumb: [
+                    'transition-size',
+                    'bg-gradient-to-r from-secondary-400 to-primary-500',
+                    'data-[dragging=true]:shadow-lg data-[dragging=true]:shadow-black/20',
+                    'data-[dragging=true]:w-7 data-[dragging=true]:h-7 data-[dragging=true]:after:h-6 data-[dragging=true]:after:w-6',
+                  ],
+                  step: 'data-[in-range=true]:bg-black/30 dark:data-[in-range=true]:bg-white/50',
+                }}
+                defaultValue={5}
+                disableThumbScale={true}
+                label="Rating"
+                maxValue={5}
+                minValue={0}
+                showOutline={true}
+                showSteps={true}
+                showTooltip={true}
+                step={0.5}
+                tooltipProps={{
+                  placement: 'bottom',
+                }}
+                onChange={(value) => {
+                  setRating(value as number);
+                }}
+              />
               <Textarea
                 isRequired
                 description="This feedback will help us improve the interview experience for future users."
