@@ -63,7 +63,7 @@ export default function IndexPage() {
   const [finishedSurvey, setFinishedSurvey] = useState(false);
   const [viewedFeedback, setViewedFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(5);
   const { isAnalyzing, analyzeInterview } = useInterviewAnalysis();
 
   const handleStart = () => {
@@ -259,18 +259,34 @@ export default function IndexPage() {
   const handleEmailSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
+    console.log(sessionStorage.getItem('email'));
+
     setIsLoading(true);
     setTimeout(() => {
       handleStart();
     }, 1000);
   };
 
-  const handleSurveySubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSurveySubmit = async () => {
     setFinishedSurvey(true);
 
-    console.log(rating);
-    console.log(feedback);
+    const webhookURL =
+      'https://script.google.com/macros/s/AKfycbxUgmjMPfU6wCcn2gTD63fO2D4hBWmz4CJiF-YnG_GFB_PCTVwFL0bPKC7OATISPWBM/exec';
+
+    const feedbackData = {
+      email: sessionStorage.getItem('email'),
+      rating: rating,
+      feedback: feedback,
+    };
+
+    await fetch(webhookURL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(feedbackData),
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    console.log('Feedback sent!');
   };
 
   useEffect(() => {
@@ -707,6 +723,10 @@ export default function IndexPage() {
             <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
               Thank you for your feedback!
             </h1>
+            <p className="text-foreground/80 font-medium text-yellow-500">
+              We&apos;ll use your feedback to improve the interview experience
+              for future users.
+            </p>
           </div>
         )}
       </section>
