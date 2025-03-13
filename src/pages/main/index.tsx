@@ -7,7 +7,7 @@ import { Textarea } from '@heroui/input';
 import { Form } from '@heroui/form';
 import { Spinner } from '@heroui/spinner';
 import { Snippet } from '@heroui/snippet';
-import { Chip } from '@heroui/chip';
+import { Skeleton } from '@heroui/skeleton';
 import { addToast } from '@heroui/toast';
 import { Pagination } from '@heroui/pagination';
 
@@ -40,6 +40,7 @@ export type QuestionWithAudio = {
   isRecording: boolean;
   timeRemaining?: number;
   retryCount: number;
+  isSubmitted: boolean;
 };
 
 const MAX_RECORDING_TIME = 60;
@@ -58,6 +59,7 @@ export default function IndexPage() {
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentAnalysisIndex, setCurrentAnalysisIndex] = useState(0);
+  const [finishedSurvey, setFinishedSurvey] = useState(false);
   const [viewedFeedback, setViewedFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
   const { isAnalyzing, analyzeInterview } = useInterviewAnalysis();
@@ -73,6 +75,7 @@ export default function IndexPage() {
       isRecording: false,
       timeRemaining: MAX_RECORDING_TIME,
       retryCount: 0,
+      isSubmitted: false,
     }));
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -173,6 +176,7 @@ export default function IndexPage() {
               isRecording: false,
               timeRemaining: 0,
               retryCount: q.retryCount + 1,
+              isSubmitted: true,
             }
           : q
       )
@@ -207,7 +211,7 @@ export default function IndexPage() {
       title: 'Thanks for your submission!',
       description: 'Your results will be available shortly.',
       color: 'success',
-      timeout: 3000,
+      timeout: 7000,
       shouldShowTimeoutProgress: true,
     });
 
@@ -247,6 +251,11 @@ export default function IndexPage() {
     setTimeout(() => {
       handleStart();
     }, 500);
+  };
+
+  const handleSurveySubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setFinishedSurvey(true);
   };
 
   useEffect(() => {
@@ -330,13 +339,44 @@ export default function IndexPage() {
                   shadow="sm"
                 >
                   {isAnalyzing ? (
-                    <div className="flex justify-center items-center min-h-[200px]">
-                      <Spinner
-                        classNames={{ label: 'text-foreground mt-4' }}
-                        color="secondary"
-                        size="lg"
-                        variant="wave"
-                      />
+                    <div className="flex justify-center items-center min-h-[500px]">
+                      <div className="w-full space-y-5 p-4">
+                        <Skeleton className="rounded-lg">
+                          <div className="h-12 rounded-lg bg-default-300" />
+                        </Skeleton>
+                        <div className="space-y-3">
+                          <Skeleton className="w-3/5 rounded-lg">
+                            <div className="h-3 w-3/5 rounded-lg bg-default-200" />
+                          </Skeleton>
+                          <Skeleton className="w-4/5 rounded-lg">
+                            <div className="h-3 w-4/5 rounded-lg bg-default-200" />
+                          </Skeleton>
+                          <Skeleton className="w-4/5 rounded-lg">
+                            <div className="h-3 w-4/5 rounded-lg bg-default-200" />
+                          </Skeleton>
+                          <Skeleton className="w-2/5 rounded-lg">
+                            <div className="h-3 w-2/5 rounded-lg bg-default-300" />
+                          </Skeleton>
+                          <Skeleton className="w-4/5 rounded-lg">
+                            <div className="h-3 w-4/5 rounded-lg bg-default-200" />
+                          </Skeleton>
+                          <Skeleton className="w-1/5 rounded-lg">
+                            <div className="h-3 w-1/5 rounded-lg bg-default-200" />
+                          </Skeleton>
+                          <Skeleton className="w-3/5 rounded-lg">
+                            <div className="h-3 w-3/5 rounded-lg bg-default-200" />
+                          </Skeleton>
+                          <Skeleton className="w-4/5 rounded-lg">
+                            <div className="h-3 w-4/5 rounded-lg bg-default-200" />
+                          </Skeleton>
+                          <Skeleton className="w-4/5 rounded-lg">
+                            <div className="h-3 w-5/5 rounded-lg bg-default-200" />
+                          </Skeleton>
+                          <Skeleton className="w-2/5 rounded-lg">
+                            <div className="h-3 w-2/5 rounded-lg bg-default-300" />
+                          </Skeleton>
+                        </div>
+                      </div>
                     </div>
                   ) : (
                     <CardBody className="p-8 max-h-[750px] overflow-x-hidden">
@@ -354,11 +394,7 @@ export default function IndexPage() {
                               ? currentAnalysisIndex + 1
                               : currentQuestionIndex + 1
                           }
-                          total={
-                            submitted
-                              ? questionsWithAudio.length
-                              : questionsWithAudio.length + 1
-                          }
+                          total={questionsWithAudio.length}
                         />
                         {!submitted && (
                           <div className="flex flex-col gap-8">
@@ -514,7 +550,11 @@ export default function IndexPage() {
                         {!submitted ? (
                           <Button
                             className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
-                            isDisabled={isAnalyzing}
+                            isDisabled={
+                              isAnalyzing ||
+                              !questionsWithAudio[currentQuestionIndex]
+                                .isSubmitted
+                            }
                             onPress={
                               currentQuestionIndex ===
                               questionsWithAudio.length - 1
@@ -577,7 +617,7 @@ export default function IndexPage() {
             </>
           )
         )}
-        {viewedFeedback && (
+        {viewedFeedback && !finishedSurvey && (
           <div className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-30">
             <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
               Please leave your feedback below
@@ -585,7 +625,10 @@ export default function IndexPage() {
             <p className="text-foreground/80 font-medium text-yellow-500">
               We&apos;d love to hear from you!
             </p>
-            <Form className="flex flex-col gap-4 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]">
+            <Form
+              className="flex flex-col gap-4 w-full max-w-[800px] max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 lg:max-h-[700px]"
+              onSubmit={handleSurveySubmit}
+            >
               <Textarea
                 isRequired
                 description="This feedback will help us improve the interview experience for future users."
@@ -600,14 +643,19 @@ export default function IndexPage() {
                 isDisabled={feedback.length == 0}
                 radius="full"
                 size="lg"
+                type="submit"
                 variant="shadow"
-                onPress={() => {
-                  console.log(feedback);
-                }}
               >
                 <p className="leading-none">Submit survey</p>
               </Button>
             </Form>
+          </div>
+        )}
+        {finishedSurvey && (
+          <div className="flex flex-col items-center justify-center gap-8 py-8 md:py-10 mb-30">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
+              Thank you for your feedback!
+            </h1>
           </div>
         )}
       </section>
