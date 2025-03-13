@@ -52,6 +52,7 @@ export default function IndexPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentAnalysisIndex, setCurrentAnalysisIndex] = useState(0);
 
   const { isAnalyzing, analyzeInterview } = useInterviewAnalysis();
 
@@ -75,6 +76,13 @@ export default function IndexPage() {
       setQuestionsWithAudio(selected);
       setCurrentQuestionIndex(0);
     }, 1000);
+  };
+
+  const startSurvey = () => {
+    setStarted(false);
+    setSubmitted(false);
+    setCurrentQuestionIndex(0);
+    setCurrentAnalysisIndex(0);
   };
 
   const startRecording = async (index: number) => {
@@ -323,7 +331,9 @@ export default function IndexPage() {
                   <CardBody className="p-8 max-h-[750px] ">
                     <div className="flex flex-col gap-4 lg:overflow-y-auto">
                       <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
-                        Behavioral Interview Questions
+                        {submitted
+                          ? 'Behavioral Interview Analysis'
+                          : 'Behavioral Interview Questions :ques'}
                       </h1>
                       {!submitted && (
                         <div className="flex flex-col gap-2">
@@ -416,74 +426,124 @@ export default function IndexPage() {
                           )}
                         </div>
                       )}
-                      {questionsWithAudio[0].transcript &&
-                        questionsWithAudio.map((item, index) => (
-                          <div
-                            key={index}
-                            className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm"
-                          >
-                            <div className="space-y-3">
-                              <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                                📊 Scores:
-                              </div>
-                              <div className="grid grid-cols-3 gap-4 text-center">
-                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                    Clarity
-                                  </span>
-                                  <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                                    {item.feedback?.clarity}
-                                    /10
-                                  </span>
-                                </div>
-                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                    Structure
-                                  </span>
-                                  <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                                    {item.feedback?.structure}
-                                    /10
-                                  </span>
-                                </div>
-                                <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
-                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
-                                    Communication
-                                  </span>
-                                  <span className="text-xl font-bold text-red-600 dark:text-red-400">
-                                    {item.feedback?.communication}
-                                    /10
-                                  </span>
-                                </div>
-                              </div>
-                              <div>
-                                <span className="font-medium text-gray-700 dark:text-gray-300">
-                                  Feedback:
+                      {submitted && (
+                        <div className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+                          <div className="space-y-3">
+                            <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                              📊 Scores:
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 text-center">
+                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                  Clarity
                                 </span>
-                                <p className="mt-1 text-gray-600 dark:text-gray-400">
-                                  {item.feedback?.feedback}
-                                </p>
+                                <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                                  {
+                                    questionsWithAudio[currentAnalysisIndex]
+                                      .feedback?.clarity
+                                  }
+                                  /10
+                                </span>
+                              </div>
+                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                  Structure
+                                </span>
+                                <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                                  {
+                                    questionsWithAudio[currentAnalysisIndex]
+                                      .feedback?.structure
+                                  }
+                                  /10
+                                </span>
+                              </div>
+                              <div className="p-2 rounded-md bg-gray-100 dark:bg-gray-700">
+                                <span className="block text-sm font-medium text-gray-600 dark:text-gray-300">
+                                  Communication
+                                </span>
+                                <span className="text-xl font-bold text-red-600 dark:text-red-400">
+                                  {
+                                    questionsWithAudio[currentAnalysisIndex]
+                                      .feedback?.communication
+                                  }
+                                  /10
+                                </span>
                               </div>
                             </div>
+                            <div>
+                              <span className="font-medium text-gray-700 dark:text-gray-300">
+                                Feedback:
+                              </span>
+                              <p className="mt-1 text-gray-600 dark:text-gray-400">
+                                {
+                                  questionsWithAudio[currentAnalysisIndex]
+                                    .feedback?.feedback
+                                }
+                              </p>
+                            </div>
                           </div>
-                        ))}
+                        </div>
+                      )}
                     </div>
                     <div className="flex justify-end mt-6">
-                      <Button
-                        className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
-                        isDisabled={isAnalyzing}
-                        onPress={
-                          currentQuestionIndex === questionsWithAudio.length - 1
-                            ? handleSubmit
-                            : handleNext
-                        }
-                      >
-                        {isAnalyzing
-                          ? 'Analyzing...'
-                          : currentQuestionIndex ===
-                              questionsWithAudio.length - 1
-                            ? 'Submit'
-                            : 'Next'}
-                      </Button>
+                      {!submitted ? (
+                        <Button
+                          className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
+                          isDisabled={isAnalyzing}
+                          onPress={
+                            currentQuestionIndex ===
+                            questionsWithAudio.length - 1
+                              ? handleSubmit
+                              : handleNext
+                          }
+                        >
+                          {isAnalyzing
+                            ? 'Analyzing...'
+                            : currentQuestionIndex ===
+                                questionsWithAudio.length - 1
+                              ? 'Submit'
+                              : 'Next'}
+                        </Button>
+                      ) : (
+                        <div className="flex flex-col sm:flex-row gap-4 sm:justify-between w-full">
+                          {currentAnalysisIndex > 0 && (
+                            <Button
+                              className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg w-full sm:w-auto"
+                              onPress={() =>
+                                setCurrentAnalysisIndex(
+                                  currentAnalysisIndex - 1
+                                )
+                              }
+                            >
+                              Previous analysis
+                            </Button>
+                          )}
+                          <Button
+                            className={`shadow-lg w-full sm:w-auto sm:ml-auto ${
+                              currentAnalysisIndex === 2
+                                ? 'bg-gradient-to-tr from-green-400 to-green-600'
+                                : 'bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8]'
+                            } 
+                            text-white`}
+                            onPress={() => {
+                              if (
+                                currentAnalysisIndex <
+                                questionsWithAudio.length - 1
+                              ) {
+                                setCurrentAnalysisIndex(
+                                  currentAnalysisIndex + 1
+                                );
+                              } else {
+                                startSurvey();
+                              }
+                            }}
+                          >
+                            {currentAnalysisIndex == 2
+                              ? 'Continue to feedback survey'
+                              : 'Next analysis'}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </CardBody>
                 )}
