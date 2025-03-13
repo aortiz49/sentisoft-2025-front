@@ -14,7 +14,7 @@ const useAudioRecorder = (): AudioRecorderHook => {
   const audioChunksRef = useRef<BlobPart[]>([]);
 
   const startRecording = async () => {
-    setAudioURL(null); // Clear old recording
+    setAudioURL(null);
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
     const mediaRecorder = new MediaRecorder(stream);
