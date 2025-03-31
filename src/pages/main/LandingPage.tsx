@@ -9,7 +9,7 @@ const LandingPage: React.FC = () => {
       <header className="header">
         <div className="logo-container">
           <div className="logo">
-            <img src="./img/1.jpg" alt="" />
+            <img src="/img/1.jpg" alt="SentiSoft Logo" />
           </div>
         </div>
       </header>
