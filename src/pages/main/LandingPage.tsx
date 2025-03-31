@@ -3,12 +3,12 @@ import React from 'react';
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-600 via-purple-800 to-blue-900 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-purple-700 via-purple-500 to-blue-900 text-white">
       {/* Header with Logo */}
       <header className="p-6">
-        <div className="w-32 h-32">
-          <img src="/img/sentisoft-logo.svg" alt="SentiSoft Logo" className="w-full" />
-          <span className="text-xl font-bold absolute top-20 left-14 text-white">SentiSoft</span>
+        <div className="w-24 h-24 relative">
+          <img src="/img/sentisoft-logo.svg" alt="SentiSoft Logo" className="w-full h-full" />
+          <span className="text-xl font-bold absolute top-8 left-7 text-white">SentiSoft</span>
         </div>
       </header>
 
@@ -25,7 +25,7 @@ const LandingPage: React.FC = () => {
           </p>
           
           <p className="mt-12 text-2xl">Associated with</p>
-          <div className="mt-4 inline-block border-2 border-white rounded-md p-4 w-20 h-20">
+          <div className="mt-4 inline-block border-2 border-white rounded-md p-4 w-20 h-20 flex items-center justify-center">
             <span className="text-3xl font-bold">in</span>
           </div>
         </div>
@@ -56,7 +56,7 @@ const LandingPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
           {/* AI Feature */}
           <div className="flex flex-col items-center">
-            <div className="w-36 h-36 mb-8">
+            <div className="w-32 h-32 mb-8">
               <img 
                 src="/img/ai-icon.svg" 
                 alt="AI" 
@@ -72,7 +72,7 @@ const LandingPage: React.FC = () => {
           
           {/* Group Feature */}
           <div className="flex flex-col items-center">
-            <div className="w-36 h-36 mb-8">
+            <div className="w-32 h-32 mb-8">
               <img 
                 src="/img/group-icon.svg" 
                 alt="Group" 
@@ -88,7 +88,7 @@ const LandingPage: React.FC = () => {
           
           {/* Free Tag Feature */}
           <div className="flex flex-col items-center">
-            <div className="w-36 h-36 mb-8">
+            <div className="w-32 h-32 mb-8">
               <img 
                 src="/img/tag-icon.svg" 
                 alt="Tag" 
