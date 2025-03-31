@@ -18,15 +18,16 @@ const LandingPage: React.FC = () => {
       <section className="hero-section">
         {/* Left Side - Hero Text */}
         <div className="hero-text">
-          <h1>Unlock Your Potential</h1>
-          <p className="subtitle">
-            Elevate Your Soft Skills and<br />
+          <h1>Unlock Your Potential
+          
+            Elevate Your <span className='highlight2'>Soft Skills</span> <br /> and
             Open Doors to <span className="highlight">Top<br />Startups!</span>
-          </p>
+            </h1>
+          
           
           <p className="association-text">Associated with</p>
           <div className="linkedin-box">
-            <span>in</span>
+            <img src="/img/linkedin_logo.png" alt="linkedin_logo" />
           </div>
         </div>
 

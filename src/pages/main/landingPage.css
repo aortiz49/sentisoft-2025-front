@@ -3,7 +3,7 @@
     min-height: 100vh;
     background: linear-gradient(to bottom, #000000, #962c9d, #4a36b3, #962c9d, #4a36b3, #000000);
     color: white;
-    font-family: 'Poppins';
+    font-family: 'Poppins', sans-serif;
   }
   
   .header {
@@ -85,6 +85,21 @@
   .highlight {
     color: #40e0d0;
     font-weight: bold;
+    background: linear-gradient(to right, #ffffff, #f0f0f0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 10px rgba(52, 235, 255, 0.625);
+
+  }
+  .highlight2 {
+    color: #ff3399;
+    font-weight:  bold;
+    background: linear-gradient(to right, #ffffff, #f0f0f0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 10px rgba(255, 79, 252, 0.625);
   }
   
   .association-text {
@@ -96,11 +111,11 @@
   .linkedin-box {
     display: inline-flex;
     margin-top: 1rem;
-    border: 2px solid white;
+    border: 0px solid white;
     border-radius: 0.375rem;
     padding: 1rem;
-    width: 5rem;
-    height: 5rem;
+    width: 8rem;
+    height: 8rem;
     align-items: center;
     justify-content: center;
     background-color: transparent;
