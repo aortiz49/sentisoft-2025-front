@@ -1,75 +1,101 @@
 ---
-import Container from "./Container.astro"
+import Container from './Container.astro';
 ---
 
-<div class="text-gray-600 dark:text-gray-300" id="reviews">
-  <Container>
-    <div class="mb-20 space-y-4 px-6 md:px-0">
-      <h2 class="text-center text-2xl font-bold text-gray-800 dark:text-white md:text-4xl">
-        We have some fans.
-      </h2>
-    </div>
-    <div class="md:columns-2 lg:columns-3 gap-8 space-y-8">
-      <div class="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
-        <div class="flex gap-4">
-          <img class="w-12 h-12 rounded-full" src="./images/avatars/avatar.webp" alt="user avatar" width="400" height="400" loading="lazy">
-          <div>
-            <h6 class="text-lg font-medium text-gray-700 dark:text-white">Daniella Doe</h6>
-            <p class="text-sm text-gray-500 dark:text-gray-300">Mobile dev</p>
-          </div>
+<div class='text-gray-600 dark:text-gray-300' id='reviews'>
+    <Container>
+        <div class='mb-6 space-y-4 px-6 md:px-0'>
+            <h2
+                class='text-center text-2xl font-bold text-gray-800 dark:text-white md:text-4xl'
+            >
+                We have some fans.
+            </h2>
         </div>
-        <p class="mt-8">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum aliquid quo eum quae quos illo earum ipsa doloribus nostrum minus libero aspernatur laborum cum, a suscipit, ratione ea totam ullam! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto laboriosam deleniti aperiam ab veniam sint non cumque quis tempore cupiditate. Sint libero voluptas veniam at reprehenderit, veritatis harum et rerum.</p>
-      </div>
-      <div class="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
-        <div class="flex gap-4">
-          <img class="w-12 h-12 rounded-full" src="./images/avatars/avatar-1.webp" alt="user avatar" width="200" height="200" loading="lazy">
-          <div>
-            <h6 class="text-lg font-medium text-gray-700 dark:text-white">Jane doe</h6>
-            <p class="text-sm text-gray-500 dark:text-gray-300">Marketing</p>
-          </div>
+        <div
+            id='review-list'
+            class='flex gap-6 overflow-x-auto pb-4 scroll-smooth px-6'
+        >
+            {
+                [
+                    {
+                        name: 'Danielle Diaz',
+                        role: 'iOS engineer',
+                        avatar: './images/avatars/avatar.webp',
+                        feedback:
+                            '“As a backend developer transitioning into product-focused roles, SentiSoft helped me articulate my thoughts clearly during behavioral interviews. The AI feedback was spot on — concise, actionable, and surprisingly human.”',
+                    },
+                    {
+                        name: 'Katrina Rios',
+                        role: 'Docker Captain',
+                        avatar: './images/avatars/avatar-1.webp',
+                        feedback:
+                            '“I used to stumble on soft skills questions like ‘Tell me about a challenge.’ SentiSoft’s mock interviews made me aware of my filler words and nervous pacing.”',
+                    },
+                    {
+                        name: 'Laura Rodriguez',
+                        role: 'Backend Engineer',
+                        avatar: './images/avatars/avatar-3.webp',
+                        feedback:
+                            '“Technical interviews were easy for me, but I kept failing the culture-fit part. SentiSoft taught me how to reflect on past team dynamics and express emotional intelligence. It’s like practicing empathy — but with metrics.”',
+                    },
+                    {
+                        name: 'Thomas Anderson',
+                        role: 'Tech Lead',
+                        avatar: './images/avatars/avatar-4.webp',
+                        feedback:
+                            '“As someone with a technical background, I always struggled to convey my teamwork and leadership skills. SentiSoft helped me frame my experiences in a way that was relatable and impactful. Thanks to their tailored feedback, I’m now more confident in interviews and landed a role I truly enjoy!”',
+                    },
+                    {
+                        name: 'Yevgeny Petrov',
+                        role: 'Staff Engineer',
+                        avatar: './images/avatars/avatar-2.webp',
+                        feedback:
+                            '“I used to freeze when asked about conflict resolution. SentiSoft’s guided mock interviews helped me navigate these tricky questions by honing in on how to articulate my approach. Now, I handle tough questions with ease, and recruiters have noticed the difference!”',
+                    },
+                ].map(({ name, role, avatar, feedback }) => (
+                    <div class='min-w-[320px] max-w-sm p-6 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-lg'>
+                        <div class='flex gap-4'>
+                            <img
+                                class='w-12 h-12 rounded-full'
+                                src={avatar}
+                                alt='user avatar'
+                                width='200'
+                                height='200'
+                                loading='lazy'
+                            />
+                            <div>
+                                <h6 class='text-lg font-medium text-gray-700 dark:text-white'>
+                                    {name}
+                                </h6>
+                                <p class='text-sm text-gray-500 dark:text-gray-300'>
+                                    {role}
+                                </p>
+                            </div>
+                        </div>
+                        <p class='mt-4 text-gray-700 dark:text-gray-300'>
+                            {feedback}
+                        </p>
+                    </div>
+                ))
+            }
         </div>
-        <p class="mt-8"> Lorem ipsum dolor laboriosam deleniti aperiam ab veniam sint non cumque quis tempore cupiditate. Sint libero voluptas veniam at reprehenderit, veritatis harum et rerum.</p>
-      </div>
-      <div class="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
-        <div class="flex gap-4">
-          <img class="w-12 h-12 rounded-full" src="./images/avatars/avatar-2.webp" alt="user avatar" width="200" height="200" loading="lazy">
-          <div>
-            <h6 class="text-lg font-medium text-gray-700 dark:text-white">Yanick Doe</h6>
-            <p class="text-sm text-gray-500 dark:text-gray-300">Developer</p>
-          </div>
-        </div>
-        <p class="mt-8">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto laboriosam deleniti aperiam ab veniam sint non cumque quis tempore cupiditate. Sint libero voluptas veniam at reprehenderit, veritatis harum et rerum.</p>
-      </div>
-      <div class="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
-        <div class="flex gap-4">
-          <img class="w-12 h-12 rounded-full" src="./images/avatars/avatar-3.webp" alt="user avatar" width="200" height="200" loading="lazy">
-          <div>
-            <h6 class="text-lg font-medium text-gray-700 dark:text-white">Jane Doe</h6>
-            <p class="text-sm text-gray-500 dark:text-gray-300">Mobile dev</p>
-          </div>
-        </div>
-        <p class="mt-8">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto laboriosam deleniti aperiam ab veniam sint non cumque quis tempore cupiditate. Sint libero voluptas veniam at reprehenderit, veritatis harum et rerum.</p>
-      </div>
-      <div class="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
-        <div class="flex gap-4">
-          <img class="w-12 h-12 rounded-full" src="./images/avatars/avatar-4.webp" alt="user avatar" width="200" height="200" loading="lazy">
-          <div>
-            <h6 class="text-lg font-medium text-gray-700 dark:text-white">Andy Doe</h6>
-            <p class="text-sm text-gray-500 dark:text-gray-300">Manager</p>
-          </div>
-        </div>
-        <p class="mt-8"> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto laboriosam deleniti aperiam ab veniam sint non cumque quis tempore cupiditate. Sint libero voluptas veniam at reprehenderit, veritatis harum et rerum.</p>
-      </div>
-      <div class="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
-        <div class="flex gap-4">
-          <img class="w-12 h-12 rounded-full" src="./images/avatars/avatar-2.webp" alt="user avatar" width="400" height="400" loading="lazy">
-          <div>
-            <h6 class="text-lg font-medium text-gray-700 dark:text-white">Yanndy Doe</h6>
-            <p class="text-sm text-gray-500 dark:text-gray-300">Mobile dev</p>
-          </div>
-        </div>
-        <p class="mt-8">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Architecto laboriosam deleniti aperiam ab veniam sint non cumque quis tempore cupiditate. Sint libero voluptas veniam at reprehenderit, veritatis harum et rerum.</p>
-      </div>
-    </div>
-  </Container>
+    </Container>
 </div>
+
+<style>
+    #review-list::-webkit-scrollbar {
+        height: 8px;
+    }
+    #review-list::-webkit-scrollbar-track {
+        background: #e5e7eb;
+        border-radius: 10px;
+    }
+    #review-list::-webkit-scrollbar-thumb {
+        background: #9ca3af;
+        border-radius: 10px;
+        transition: background 0.3s ease-in-out;
+    }
+    #review-list::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+    }
+</style>
