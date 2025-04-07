@@ -1,0 +1,135 @@
+---
+import Container from './Container.astro';
+---
+
+<div class='relative' id='home'>
+    <div
+        aria-hidden='true'
+        class='absolute inset-0 grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-20'
+    >
+        <div
+            class='blur-[106px] h-56 bg-gradient-to-br from-primary to-purple-400 dark:from-blue-700'
+        >
+        </div>
+        <div
+            class='blur-[106px] h-32 bg-gradient-to-r from-cyan-400 to-sky-300 dark:to-indigo-600'
+        >
+        </div>
+    </div>
+    <Container>
+        <div class='relative pt-36 ml-auto'>
+            <div class='lg:w-2/3 text-center mx-auto'>
+                <h1
+                    class='text-gray-900 text-balance dark:text-white font-bold text-5xl md:text-6xl xl:text-7xl'
+                >
+                    AI-Powered Interviews to Elevate Your Potential 🚀
+                </h1>
+                <p class='mt-8 text-gray-700 dark:text-gray-300'>
+                    Unlock deeper understanding, refine your skills, and shape
+                    the future with AI-driven feedback.
+                </p>
+                <div
+                    class='mt-16 flex flex-wrap justify-center gap-y-4 gap-x-6'
+                >
+                    <a
+                        href='#'
+                        class='relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max'
+                    >
+                        <span
+                            class='relative text-base font-semibold text-white'
+                            >Get started</span
+                        >
+                    </a>
+                </div>
+                <div
+                    class='hidden py-8 mt-16 border-y border-gray-100 dark:border-gray-800 sm:flex justify-between'
+                >
+                    <div class='text-left'>
+                        <h6
+                            class='text-lg font-semibold text-gray-700 dark:text-white'
+                        >
+                            AI-Powered Insights
+                        </h6>
+                        <p class='mt-2 text-gray-500'>
+                            Transform feedback into growth with cutting-edge AI
+                            analysis.
+                        </p>
+                    </div>
+                    <div class='text-left'>
+                        <h6
+                            class='text-lg font-semibold text-gray-700 dark:text-white'
+                        >
+                            Fast & Actionable
+                        </h6>
+                        <p class='mt-2 text-gray-500'>
+                            Get instant, structured feedback to refine your
+                            skills efficiently.
+                        </p>
+                    </div>
+                    <div class='text-left'>
+                        <h6
+                            class='text-lg font-semibold text-gray-700 dark:text-white'
+                        >
+                            Trusted by Professionals
+                        </h6>
+                        <p class='mt-2 text-gray-500'>
+                            Used by top talent to enhance performance and
+                            communication.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- clients -->
+            <div class='mt-12 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6'>
+                <div class='p-4'>
+                    <img
+                        src='./images/clients/rappi.svg'
+                        class='h-12 w-auto mx-auto'
+                        loading='lazy'
+                        alt='Rappi logo'
+                    />
+                </div>
+                <div class='p-4'>
+                    <img
+                        src='./images/clients/merqueo.png'
+                        class='h-14 w-auto mx-auto'
+                        loading='lazy'
+                        alt='Merqueo logo'
+                    />
+                </div>
+                <div class='p-4 flex transition duration-200'>
+                    <img
+                        src='./images/clients/jokr.png'
+                        class='h-12 w-auto m-auto'
+                        loading='lazy'
+                        alt='Jokr logo'
+                    />
+                </div>
+                <div class='p-4 transition duration-200'>
+                    <img
+                        src='./images/clients/platzi.png'
+                        class='h-12 w-auto mx-auto'
+                        loading='lazy'
+                        alt='Platzi logo'
+                    />
+                </div>
+                <div class='p-4 flex'>
+                    <img
+                        src='./images/clients/frubana.png'
+                        class='h-16 w-auto m-auto'
+                        loading='lazy'
+                        alt='Frubana logo'
+                    />
+                </div>
+                <div class='p-4 transition duration-200'>
+                    <img
+                        src='./images/clients/nu.png'
+                        class='h-12 w-auto mx-auto'
+                        loading='lazy'
+                        alt='Nu logo'
+                    />
+                </div>
+            </div>
+        </div>
+    </Container>
+</div>
