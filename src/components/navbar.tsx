@@ -7,7 +7,6 @@ import {
 } from '@heroui/navbar';
 
 import { ThemeSwitch } from '@/components/theme-switch';
-import { Logo } from '@/components/icons';
 
 export const Navbar = () => {
   return (
@@ -19,8 +18,21 @@ export const Navbar = () => {
             color="foreground"
             href="/"
           >
-            <Logo />
-            <p className="font-bold text-inherit">SentiSoft</p>
+            <a
+              aria-label="logo"
+              className="flex items-center space-x-2"
+              href="/#home"
+            >
+              <div aria-hidden="true" className="flex space-x-1">
+                <div className="size-4 rounded-full bg-gray-900 dark:bg-white" />
+                <div className="h-6 w-2 bg-primary dark:bg-violet-500" />
+              </div>
+              <span
+                className={'text-2xl font-bold text-gray-900 dark:text-white'}
+              >
+                SentiSoft
+              </span>
+            </a>
           </Link>
         </NavbarBrand>
       </NavbarContent>
