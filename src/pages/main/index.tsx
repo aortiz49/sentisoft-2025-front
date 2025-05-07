@@ -11,6 +11,7 @@ import { Skeleton } from '@heroui/skeleton';
 import { addToast } from '@heroui/toast';
 import { Pagination } from '@heroui/pagination';
 import { Slider } from '@heroui/slider';
+import { Modal, ModalBody, ModalHeader, ModalFooter } from '@heroui/modal';
 
 import CustomAudioPlayer from './CustomAudioPlayer';
 import { questions } from './config';
@@ -18,7 +19,8 @@ import { questions } from './config';
 import { title, subtitle } from '@/components/primitives';
 import DefaultLayout from '@/layouts/default';
 import useInterviewAnalysis from '@/hooks/useInterviewAnalysis';
-import { registerUser } from '@/utils/api';
+import { getProfile, loginUser, registerUser } from '@/utils/api';
+import { useNavigate } from 'react-router-dom';
 
 export type FeedbackType = {
   clarity: number;
@@ -48,6 +50,9 @@ export type QuestionWithAudio = {
 const MAX_RECORDING_TIME = 60;
 
 export default function IndexPage() {
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [tempName, setTempName] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [started, setStarted] = useState(false);
@@ -67,6 +72,32 @@ export default function IndexPage() {
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(5);
   const { isAnalyzing, analyzeInterview } = useInterviewAnalysis();
+
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const { access_token } = await loginUser(email, password);
+      sessionStorage.setItem('token', access_token);
+
+      const profile = await getProfile(access_token);
+      console.log('Profile:', profile);
+
+      sessionStorage.setItem('email', profile.email);
+
+      navigate('/profile');
+    } catch (err) {
+      addToast({
+        title: 'Login error',
+        description: (err as Error).message,
+        color: 'danger',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleStart = () => {
     setIsLoading(true);
@@ -259,26 +290,6 @@ export default function IndexPage() {
     );
   };
 
-  const handleEmailSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    setIsLoading(true);
-    try {
-      await registerUser(email, password);
-      sessionStorage.setItem('email', email);
-      handleStart(); // only start after successful registration
-    } catch (error) {
-      console.error('Registration failed:', error);
-      addToast({
-        title: 'Registration Error',
-        description: (error as Error).message,
-        color: 'danger',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSurveySubmit = async () => {
     setFinishedSurvey(true);
 
@@ -303,21 +314,30 @@ export default function IndexPage() {
 
   useEffect(() => {
     const savedEmail = sessionStorage.getItem('email');
+    const savedName = sessionStorage.getItem('name');
 
-    if (savedEmail) {
-      setEmail(savedEmail);
+    if (savedEmail) setEmail(savedEmail);
+    if (savedName) {
+      setUserName(savedName);
+      setShowNameModal(false);
+    } else if (savedEmail) {
+      setShowNameModal(true);
     }
   }, []);
-
-  useEffect(() => {
-    if (email) {
-      sessionStorage.setItem('email', email);
-    }
-  }, [email]);
 
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-8 py-8 md:py-10">
+        <div className="absolute top-4 left-4 text-sm text-gray-600 dark:text-gray-300">
+          {userName && email && (
+            <>
+              <div>
+                <strong>{userName}</strong>
+              </div>
+              <div>{email}</div>
+            </>
+          )}
+        </div>
         {!started && !isLoading && (
           <div className="inline-block max-w-lg text-center justify-center">
             <span className={title()}>Tech Skills Open Doors.&nbsp;</span>
@@ -330,7 +350,7 @@ export default function IndexPage() {
               Ace your next behavioral interview with AI-powered practice
               sessions.
             </div>
-            <Form className="gap-4" onSubmit={handleEmailSubmit}>
+            <Form className="gap-4" onSubmit={handleLogin}>
               <Input
                 isRequired
                 className="max-w-[300px] self-center"
@@ -756,6 +776,29 @@ export default function IndexPage() {
           </div>
         )}
       </section>
+      <Modal isOpen={showNameModal} onClose={() => {}}>
+        <ModalHeader>Complete Your Profile</ModalHeader>
+        <ModalBody>
+          <Input
+            label="Name"
+            placeholder="Enter your name"
+            value={tempName}
+            onChange={(e) => setTempName(e.target.value)}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            onPress={() => {
+              sessionStorage.setItem('name', tempName);
+              setUserName(tempName);
+              setShowNameModal(false);
+              handleStart();
+            }}
+          >
+            Save
+          </Button>
+        </ModalFooter>
+      </Modal>
     </DefaultLayout>
   );
 }
