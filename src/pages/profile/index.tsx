@@ -14,6 +14,11 @@ export default function ProfilePage() {
     if (savedEmail) setEmail(savedEmail);
   }, []);
 
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate('/login');
+  };
+
   return (
     <DefaultLayout>
       {/* Sidebar */}
@@ -33,6 +38,15 @@ export default function ProfilePage() {
           onPress={() => navigate('/interview')}
         >
           🎤 Start Interview
+        </Button>
+
+        {/* Logout Button at the Bottom */}
+        <Button
+          className="mt-auto text-sm text-red-500 hover:underline"
+          variant="light"
+          onPress={handleLogout}
+        >
+          Log out
         </Button>
       </aside>
 
