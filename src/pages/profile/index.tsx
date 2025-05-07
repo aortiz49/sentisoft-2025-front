@@ -21,35 +21,6 @@ export default function ProfilePage() {
 
   return (
     <DefaultLayout>
-      {/* Sidebar */}
-      <aside className="fixed top-[64px] left-0 h-[calc(100vh-64px)] w-64 bg-background dark:bg-default-100 border-r border-gray-200 dark:border-gray-700 p-6 flex flex-col items-center z-10 shadow-md">
-        <Avatar
-          isBordered
-          radius="full"
-          className="w-12 h-12 mb-4"
-          name={email}
-        />
-        <p className="text-center text-sm font-medium text-foreground/80 break-words mb-6">
-          {email}
-        </p>
-        <Button
-          className="bg-gradient-to-tr from-[#7b2ff7] to-[#f107a3] text-white shadow-lg w-full"
-          radius="full"
-          onPress={() => navigate('/interview')}
-        >
-          🎤 Start Interview
-        </Button>
-
-        {/* Logout Button at the Bottom */}
-        <Button
-          className="mt-auto text-sm text-red-500 hover:underline"
-          variant="light"
-          onPress={handleLogout}
-        >
-          Log out
-        </Button>
-      </aside>
-
       {/* Main Content Area */}
       <div className="ml-64 mt-[64px] p-6">
         <h1 className="text-3xl font-bold text-foreground">Welcome!</h1>

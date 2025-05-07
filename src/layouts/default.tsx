@@ -1,3 +1,7 @@
+import { Avatar } from '@heroui/avatar';
+import { Button } from '@heroui/button';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Navbar } from '@/components/navbar';
 
 export default function DefaultLayout({
@@ -5,12 +9,57 @@ export default function DefaultLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [email, setEmail] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedEmail = sessionStorage.getItem('email');
+    if (savedEmail) setEmail(savedEmail);
+  }, []);
+
+  const logout = () => {
+    sessionStorage.clear();
+    navigate('/');
+  };
+
   return (
-    <div className="relative flex flex-col h-screen overflow-hidden">
-      <Navbar />
-      <main className="container mx-auto max-w-7xl flex-grow md:pt-8 flex flex-col justify-center">
-        {children}
-      </main>
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar (full height) */}
+      <aside className="w-[220px] bg-background border-r p-4 flex flex-col items-center pt-[64px]">
+        <Avatar
+          src="https://i.pravatar.cc/300"
+          alt="User avatar"
+          className="w-12 h-12 mb-4"
+        />
+        <p className="text-sm text-center text-default-500 break-words">
+          {email}
+        </p>
+        <Link to="/interview" className="mt-6">
+          <Button
+            className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-md"
+            size="sm"
+            radius="full"
+          >
+            Start Interview
+          </Button>
+        </Link>
+        <div className="mt-auto w-full">
+          <Button
+            className="w-full"
+            color="danger"
+            variant="flat"
+            onClick={logout}
+          >
+            Logout
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main content including Navbar */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Navbar />
+        <main className="flex-1 overflow-auto p-6">{children}</main>
+      </div>
     </div>
   );
 }
