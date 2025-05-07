@@ -18,6 +18,7 @@ import { questions } from './config';
 import { title, subtitle } from '@/components/primitives';
 import DefaultLayout from '@/layouts/default';
 import useInterviewAnalysis from '@/hooks/useInterviewAnalysis';
+import { registerUser } from '@/utils/api';
 
 export type FeedbackType = {
   clarity: number;
@@ -47,6 +48,7 @@ export type QuestionWithAudio = {
 const MAX_RECORDING_TIME = 60;
 
 export default function IndexPage() {
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [started, setStarted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -257,13 +259,24 @@ export default function IndexPage() {
     );
   };
 
-  const handleEmailSubmit = (event: React.FormEvent) => {
+  const handleEmailSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     setIsLoading(true);
-    setTimeout(() => {
-      handleStart();
-    }, 1000);
+    try {
+      await registerUser(email, password);
+      sessionStorage.setItem('email', email);
+      handleStart(); // only start after successful registration
+    } catch (error) {
+      console.error('Registration failed:', error);
+      addToast({
+        title: 'Registration Error',
+        description: (error as Error).message,
+        color: 'danger',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSurveySubmit = async () => {
@@ -330,8 +343,22 @@ export default function IndexPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              <Input
+                isRequired
+                className="max-w-[300px] self-center"
+                errorMessage="Please enter a valid password"
+                label="Password"
+                labelPlacement="outside"
+                name="password"
+                placeholder="Enter your password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+
               <Button
                 className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
+                isDisabled={!email || !password}
                 isLoading={isLoading}
                 radius="full"
                 size="lg"
