@@ -325,6 +325,14 @@ export default function IndexPage() {
     }
   }, []);
 
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+
+    if (token) {
+      navigate('/profile');
+    }
+  }, [navigate]);
+
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-8 py-8 md:py-10">
