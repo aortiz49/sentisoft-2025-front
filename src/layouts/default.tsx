@@ -54,7 +54,7 @@ export default function DefaultLayout({
               className="w-full"
               color="danger"
               variant="flat"
-              onClick={logout}
+              onPress={logout}
             >
               Logout
             </Button>
