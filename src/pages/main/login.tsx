@@ -102,7 +102,7 @@ export default function Login() {
               variant="shadow"
               onPress={() => setEmail(email)}
             >
-              <p className="leading-none">Start</p>
+              <p className="leading-none">Login</p>
             </Button>
           </Form>
         </div>
