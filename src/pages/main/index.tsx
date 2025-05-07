@@ -75,22 +75,42 @@ export default function IndexPage() {
 
   const navigate = useNavigate();
 
+  const performLogin = async (email: string, password: string) => {
+    const { access_token } = await loginUser(email, password);
+
+    sessionStorage.setItem('token', access_token);
+
+    const profile = await getProfile(access_token);
+
+    sessionStorage.setItem('email', profile.email);
+    navigate('/profile');
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { access_token } = await loginUser(email, password);
-      sessionStorage.setItem('token', access_token);
-
-      const profile = await getProfile(access_token);
-      console.log('Profile:', profile);
-
-      sessionStorage.setItem('email', profile.email);
-
-      navigate('/profile');
+      await performLogin(email, password);
     } catch (err) {
       addToast({
         title: 'Login error',
+        description: (err as Error).message,
+        color: 'danger',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await registerUser(email, password);
+      await performLogin(email, password);
+    } catch (err) {
+      addToast({
+        title: 'Registration error',
         description: (err as Error).message,
         color: 'danger',
       });
@@ -358,7 +378,7 @@ export default function IndexPage() {
               Ace your next behavioral interview with AI-powered practice
               sessions.
             </div>
-            <Form className="gap-4" onSubmit={handleLogin}>
+            <Form className="gap-4" onSubmit={handleRegister}>
               <Input
                 isRequired
                 className="max-w-[300px] self-center"
