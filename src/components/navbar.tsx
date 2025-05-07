@@ -5,10 +5,14 @@ import {
   NavbarContent,
   NavbarItem,
 } from '@heroui/navbar';
+import { Button } from '@heroui/button';
+import { useNavigate } from 'react-router-dom';
 
 import { ThemeSwitch } from '@/components/theme-switch';
 
 export const Navbar = () => {
+  const navigate = useNavigate();
+
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -42,6 +46,18 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
+          <Button
+            className="bg-gradient-to-tr from-[#371cff] to-[#49aff8] text-white shadow-lg self-center"
+            radius="full"
+            size="sm"
+            type="submit"
+            variant="shadow"
+            onPress={() => {
+              navigate('/login');
+            }}
+          >
+            <p className="leading-none">Login</p>
+          </Button>
           <ThemeSwitch />
         </NavbarItem>
       </NavbarContent>
