@@ -7,18 +7,22 @@ import {
   NavbarItem,
 } from '@heroui/navbar';
 import { Button } from '@heroui/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { ThemeSwitch } from '@/components/theme-switch';
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     setIsLoggedIn(!!token);
   }, []);
+
+  const showLogin = !isLoggedIn && location.pathname === '/';
+  const showRegister = !isLoggedIn && location.pathname === '/login';
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
@@ -51,7 +55,7 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
-          {!isLoggedIn && (
+          {showLogin && (
             <Button
               className="bg-gradient-to-tr from-[#371cff] to-[#49aff8] text-white shadow-lg self-center"
               radius="full"
@@ -62,6 +66,19 @@ export const Navbar = () => {
               }}
             >
               <p className="leading-none">Login</p>
+            </Button>
+          )}
+          {showRegister && (
+            <Button
+              className="bg-gradient-to-tr from-[#49aff8] to-[#371cff] text-white shadow-lg self-center"
+              radius="full"
+              size="sm"
+              variant="shadow"
+              onPress={() => {
+                navigate('/');
+              }}
+            >
+              <p className="leading-none">Register</p>
             </Button>
           )}
           <ThemeSwitch />
