@@ -45,7 +45,7 @@ const MAX_RECORDING_TIME = 60;
 
 export default function Interview() {
   const [isLoading, setIsLoading] = useState(false);
-  const [started, setStarted] = useState(false);
+  const [, setStarted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [questionsWithAudio, setQuestionsWithAudio] = useState<
     QuestionWithAudio[]
@@ -255,15 +255,6 @@ export default function Interview() {
         };
       })
     );
-  };
-
-  const handleEmailSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    setIsLoading(true);
-    setTimeout(() => {
-      handleStart();
-    }, 1000);
   };
 
   const handleSurveySubmit = async () => {
