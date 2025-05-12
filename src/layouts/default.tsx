@@ -2,6 +2,7 @@ import { Avatar } from '@heroui/avatar';
 import { Button } from '@heroui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+
 import { Navbar } from '@/components/navbar';
 
 export default function DefaultLayout({
