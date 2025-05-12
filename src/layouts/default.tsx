@@ -34,18 +34,19 @@ export default function DefaultLayout({
       {isAuthenticated && (
         <aside className="w-[220px] bg-background border-r p-4 flex flex-col items-center">
           <Avatar
-            src="https://i.pravatar.cc/300"
             alt="User avatar"
             className="w-12 h-12 mb-4"
+            src="https://i.pravatar.cc/300"
           />
           <p className="text-sm text-center text-default-500 break-words">
             {email}
           </p>
-          <Link to="/interview" className="mt-6">
+          <Link className="mt-6" to="/interview">
             <Button
               className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-md"
-              size="sm"
               radius="full"
+              size="sm"
+              onPress={() => navigate('/interview')}
             >
               Start Interview
             </Button>
