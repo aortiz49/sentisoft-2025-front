@@ -1,5 +1,7 @@
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL;
+
 export async function registerUser(email: string, password: string) {
-  const res = await fetch('http://localhost:8000/auth/register', {
+  const res = await fetch(`${backendApiUrl}/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,7 +19,7 @@ export async function registerUser(email: string, password: string) {
 }
 
 export async function loginUser(email: string, password: string) {
-  const res = await fetch('http://localhost:8000/auth/token', {
+  const res = await fetch(`${backendApiUrl}/auth/token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -35,7 +37,7 @@ export async function loginUser(email: string, password: string) {
 }
 
 export async function getProfile(token: string) {
-  const res = await fetch('http://127.0.0.1:8000/auth/profile', {
+  const res = await fetch(`${backendApiUrl}/auth/profile`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

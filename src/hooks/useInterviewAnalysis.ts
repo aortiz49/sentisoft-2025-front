@@ -9,7 +9,7 @@ export default function useInterviewAnalysis() {
 
   const deepgramApiKey = import.meta.env.VITE_DEEPGRAM_API_KEY;
 
-  const backendApiUrl = 'http://localhost:8000';
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
   const fetchInterviewQuestions = async () => {
     try {
