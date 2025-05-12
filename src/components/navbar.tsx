@@ -78,7 +78,6 @@ export const Navbar = () => {
               <p className="leading-none">Register</p>
             </Button>
           )}
-          <ThemeSwitch className="hidden sm:block" />
         </NavbarItem>
       </NavbarContent>
     </HeroUINavbar>

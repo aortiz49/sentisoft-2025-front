@@ -95,29 +95,34 @@ export default function Interview() {
 
   const startRecording = async (index: number) => {
     try {
+      // Request permission and access to audio
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
+      // Determine supported mime type
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
-        : 'audio/mp3';
+        : 'audio/webm';
 
       console.log('Using mime type:', mimeType);
 
-      mediaRecorderRef.current = new MediaRecorder(stream, {
+      // Create MediaRecorder instance
+      const mediaRecorder = new MediaRecorder(stream, {
         mimeType,
         audioBitsPerSecond: 128000,
       });
 
+      mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
+      // Capture audio chunks
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
       };
 
-      mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: mimeType,
-        });
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
         const audioURL = URL.createObjectURL(audioBlob);
 
         setQuestionsWithAudio((prev) =>
@@ -133,10 +138,18 @@ export default function Interview() {
               : q
           )
         );
-        clearTimeout(countdownTimerRef.current!);
+
+        if (countdownTimerRef.current) {
+          clearTimeout(countdownTimerRef.current);
+        }
+
+        // Stop all tracks to release mic
+        stream.getTracks().forEach((track) => track.stop());
       };
 
-      mediaRecorderRef.current.start();
+      // Start recording and countdown
+      mediaRecorder.start();
+
       setQuestionsWithAudio((prev) =>
         prev.map((q, i) =>
           i === index
@@ -148,6 +161,9 @@ export default function Interview() {
       startCountdownTimer(index);
     } catch (error) {
       console.error('Recording error:', error);
+      alert(
+        'Unable to access microphone. Please check your browser permissions and try again.'
+      );
     }
   };
 
