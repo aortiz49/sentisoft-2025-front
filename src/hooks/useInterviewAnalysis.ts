@@ -9,8 +9,30 @@ export default function useInterviewAnalysis() {
 
   const deepgramApiKey = import.meta.env.VITE_DEEPGRAM_API_KEY;
 
-  const backendApiUrl =
-    import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000';
+  const backendApiUrl = 'http://localhost:8000';
+
+  const fetchInterviewQuestions = async () => {
+    try {
+      const response = await fetch(
+        `${backendApiUrl}/interview/questions/random`,
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+
+      if (!response.ok)
+        throw new Error(`Failed to fetch questions: ${response.status}`);
+      const questions = await response.json();
+
+      return questions;
+    } catch (err) {
+      console.error('Error fetching interview questions:', err);
+      setError('Failed to load questions from backend.');
+
+      return [];
+    }
+  };
 
   const analyzeInterview = async (
     questionsWithAudio: { question: string; audioBlob: Blob | null }[]
@@ -104,5 +126,6 @@ export default function useInterviewAnalysis() {
     results,
     error,
     analyzeInterview,
+    fetchInterviewQuestions,
   };
 }

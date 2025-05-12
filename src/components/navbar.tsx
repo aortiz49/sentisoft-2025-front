@@ -33,11 +33,7 @@ export const Navbar = () => {
             color="foreground"
             href="/"
           >
-            <a
-              aria-label="logo"
-              className="flex items-center space-x-2"
-              href="/#home"
-            >
+            <span aria-label="logo" className="flex items-center space-x-2">
               <div aria-hidden="true" className="flex space-x-1">
                 <div className="size-4 rounded-full bg-gray-900 dark:bg-white" />
                 <div className="h-6 w-2 bg-primary dark:bg-violet-500" />
@@ -45,7 +41,7 @@ export const Navbar = () => {
               <span className="text-2xl font-bold text-gray-900 dark:text-white">
                 SentiSoft
               </span>
-            </a>
+            </span>
           </Link>
         </NavbarBrand>
       </NavbarContent>

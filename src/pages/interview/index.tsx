@@ -2,7 +2,6 @@
 import { Button } from '@heroui/button';
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardBody } from '@heroui/card';
-import { Input } from '@heroui/input';
 import { Textarea } from '@heroui/input';
 import { Form } from '@heroui/form';
 import { Spinner } from '@heroui/spinner';
@@ -13,8 +12,6 @@ import { Pagination } from '@heroui/pagination';
 import { Slider } from '@heroui/slider';
 
 import CustomAudioPlayer from '@/pages/interview/CustomAudioPlayer';
-import { questions } from '@/pages/interview/config';
-import { title, subtitle } from '@/components/primitives';
 import DefaultLayout from '@/layouts/default';
 import useInterviewAnalysis from '@/hooks/useInterviewAnalysis';
 
@@ -63,14 +60,17 @@ export default function Interview() {
   const [viewedFeedback, setViewedFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(5);
-  const { isAnalyzing, analyzeInterview } = useInterviewAnalysis();
+  const { isAnalyzing, analyzeInterview, fetchInterviewQuestions } =
+    useInterviewAnalysis();
 
-  const handleStart = () => {
+  const handleStart = async () => {
     setIsLoading(true);
     setStarted(true);
-    const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 3).map((q) => ({
-      question: q,
+    const questions = await fetchInterviewQuestions();
+
+    const selected = questions.map((q: any) => ({
+      question: q.text,
+      fullQuestion: q,
       audioURL: null,
       audioBlob: null,
       isRecording: false,
@@ -78,7 +78,6 @@ export default function Interview() {
       retryCount: 0,
       isSubmitted: false,
     }));
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     setTimeout(() => {
