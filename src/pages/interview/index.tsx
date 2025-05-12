@@ -301,50 +301,15 @@ export default function Interview() {
     }
   }, [email]);
 
+  useEffect(() => {
+    if (email) {
+      handleStart();
+    }
+  }, [email]);
+
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-8 py-8 md:py-10">
-        {!started && !isLoading && (
-          <div className="inline-block max-w-lg text-center justify-center">
-            <span className={title()}>Tech Skills Open Doors.&nbsp;</span>
-            <span className={title({ color: 'violet' })}>
-              Soft Skills&nbsp;
-            </span>
-            <br />
-            <span className={title()}>Get You Through Them.&nbsp;</span>
-            <div className={subtitle({ class: 'mt-4' })}>
-              Ace your next behavioral interview with AI-powered practice
-              sessions.
-            </div>
-            <Form className="gap-4" onSubmit={handleEmailSubmit}>
-              <Input
-                isRequired
-                className="max-w-[300px] self-center"
-                errorMessage="Please enter a valid email"
-                label="Email"
-                labelPlacement="outside"
-                name="email"
-                placeholder="Enter your email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Button
-                className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg self-center"
-                isLoading={isLoading}
-                radius="full"
-                size="lg"
-                type="submit"
-                variant="shadow"
-                onPress={() => {
-                  setEmail(email);
-                }}
-              >
-                <p className="leading-none">Start</p>
-              </Button>
-            </Form>
-          </div>
-        )}
         {isLoading ? (
           <div className="flex justify-center items-center min-h-[200px]">
             <Spinner

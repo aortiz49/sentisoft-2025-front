@@ -12,7 +12,14 @@ function App() {
     <Routes>
       <Route element={<AuthPage />} path="/" />
       <Route element={<Login />} path="/login" />
-      <Route element={<Interview />} path="/interview" />
+      <Route
+        element={
+          <ProtectedRoute>
+            <Interview />
+          </ProtectedRoute>
+        }
+        path="/interview"
+      />
       <Route
         element={
           <ProtectedRoute>
