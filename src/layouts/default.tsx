@@ -30,28 +30,28 @@ export default function DefaultLayout({
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden flex-col md:flex-row">
       {isAuthenticated && (
-        <aside className="w-[220px] bg-background border-r p-4 flex flex-col items-center">
-          <Avatar
-            alt="User avatar"
-            className="w-12 h-12 mb-4"
-            src="https://i.pravatar.cc/300"
-          />
-          <p className="text-sm text-center text-default-500 break-words">
-            {email}
-          </p>
-          <Link className="mt-6" to="/interview">
+        <aside className="w-full md:w-[220px] bg-background border-r p-4 flex flex-col justify-between">
+          <div className="flex flex-col items-center md:items-start space-y-4">
+            <Avatar
+              alt="User avatar"
+              className="w-12 h-12"
+              src="https://i.pravatar.cc/300"
+            />
+            <p className="text-sm text-default-500 text-center md:text-left break-words">
+              {email}
+            </p>
             <Button
-              className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-md"
+              className="w-full bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-md"
               radius="full"
               size="sm"
               onPress={() => navigate('/interview')}
             >
               Start Interview
             </Button>
-          </Link>
-          <div className="mt-auto w-full">
+          </div>
+          <div className="mt-6 md:mt-auto">
             <Button
               className="w-full"
               color="danger"
@@ -64,10 +64,9 @@ export default function DefaultLayout({
         </aside>
       )}
 
-      {/* Main content area */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <Navbar />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

@@ -33,7 +33,11 @@ export const Navbar = () => {
             color="foreground"
             href="/"
           >
-            <span aria-label="logo" className="flex items-center space-x-2">
+            <a
+              aria-label="logo"
+              className="hidden sm:flex items-center space-x-2"
+              href="/#home"
+            >
               <div aria-hidden="true" className="flex space-x-1">
                 <div className="size-4 rounded-full bg-gray-900 dark:bg-white" />
                 <div className="h-6 w-2 bg-primary dark:bg-violet-500" />
@@ -41,16 +45,13 @@ export const Navbar = () => {
               <span className="text-2xl font-bold text-gray-900 dark:text-white">
                 SentiSoft
               </span>
-            </span>
+            </a>
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
-        <NavbarItem className="hidden sm:flex gap-2">
+      <NavbarContent className="basis-1/5 sm:basis-full" justify="end">
+        <NavbarItem className="align-items-center justify-center gap-2">
           {showLogin && (
             <Button
               className="bg-gradient-to-tr from-[#371cff] to-[#49aff8] text-white shadow-lg self-center"
@@ -77,7 +78,7 @@ export const Navbar = () => {
               <p className="leading-none">Register</p>
             </Button>
           )}
-          <ThemeSwitch />
+          <ThemeSwitch className="hidden sm:block" />
         </NavbarItem>
       </NavbarContent>
     </HeroUINavbar>

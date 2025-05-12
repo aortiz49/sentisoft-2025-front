@@ -13,9 +13,9 @@ export default function ProfilePage() {
 
   return (
     <DefaultLayout>
-      <div className="ml-64 mt-[64px] p-6">
+      <div className="px-4 py-6 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-foreground">
-          Welcome!, {email}
+          Welcome{email ? `, ${email}` : ''}!
         </h1>
         <p className="mt-4 text-lg text-foreground/80">
           This is your dashboard.
