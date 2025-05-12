@@ -30,6 +30,7 @@ export type AnalysisResult = {
 
 export type QuestionWithAudio = {
   question: string;
+  category: { id: string; category: string; description: string };
   audioURL: string | null;
   audioBlob?: Blob | null;
   transcript?: string;
@@ -70,6 +71,7 @@ export default function Interview() {
 
     const selected = questions.map((q: any) => ({
       question: q.text,
+      category: q.category,
       fullQuestion: q,
       audioURL: null,
       audioBlob: null,
@@ -397,6 +399,13 @@ export default function Interview() {
                                 key={currentQuestionIndex}
                                 className="flex flex-col gap-2 border-b border-foreground/10 pb-4 last:border-none gap-2"
                               >
+                                <p className="text-foreground/80 font-medium text-orange-500">
+                                  Category:{' '}
+                                  {
+                                    questionsWithAudio[currentQuestionIndex]
+                                      .category.category
+                                  }
+                                </p>
                                 <Snippet
                                   classNames={{
                                     base: 'w-full',
