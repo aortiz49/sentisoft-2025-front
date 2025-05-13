@@ -29,6 +29,7 @@ export type AnalysisResult = {
 };
 
 export type QuestionWithAudio = {
+  id: number;
   question: string;
   category: { id: string; category: string; description: string };
   audioURL: string | null;
@@ -61,23 +62,31 @@ export default function Interview() {
   const [viewedFeedback, setViewedFeedback] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(5);
-  const { isAnalyzing, analyzeInterview, fetchInterviewQuestions } =
-    useInterviewAnalysis();
+  const {
+    isAnalyzing,
+    isRecording,
+    analyzeInterview,
+    fetchInterviewQuestions,
+    saveInterviewAnswer,
+    analyzeSingleQuestion,
+  } = useInterviewAnalysis();
 
   const handleStart = async () => {
     setIsLoading(true);
     setStarted(true);
 
     const questions = await fetchInterviewQuestions();
+
     if (!questions.length) {
       setIsLoading(false);
+
       return;
     }
 
     const selected = questions.map((q: any) => ({
+      id: q.id,
       question: q.text,
       category: q.category,
-      fullQuestion: q,
       audioURL: null,
       audioBlob: null,
       isRecording: false,
@@ -217,6 +226,44 @@ export default function Interview() {
     const isLastQuestion =
       currentQuestionIndex === questionsWithAudio.length - 1;
 
+    const current = questionsWithAudio[currentQuestionIndex];
+    const audioBlob = current.audioBlob;
+
+    if (!audioBlob) return;
+
+    // 1. Analyze audio
+    const result = await analyzeSingleQuestion({
+      question: current.question,
+      audioBlob,
+    });
+
+    if (!result) return;
+
+    // 2. Get interview ID
+    const interviewId = sessionStorage.getItem('interviewId');
+
+    const questionId = current.id;
+
+    // 3. Save transcript
+    await saveInterviewAnswer({
+      interviewId: Number(interviewId),
+      questionId,
+      transcript: result.transcript,
+    });
+
+    // 4. Update state
+    setQuestionsWithAudio((prev) =>
+      prev.map((q, i) =>
+        i === currentQuestionIndex
+          ? {
+              ...q,
+              transcript: result.transcript,
+            }
+          : q
+      )
+    );
+
+    // 5. Move forward
     if (isLastQuestion) {
       await handleSubmit();
       setSubmitted(true);
@@ -232,7 +279,7 @@ export default function Interview() {
       prev.map((q) => ({ ...q, timeRemaining: 0 }))
     );
 
-    let isToastActive = true; // Local flag to control the toast loop
+    let isToastActive = true;
 
     const showToastLoop = () => {
       if (!isToastActive) return;
@@ -254,7 +301,7 @@ export default function Interview() {
       }))
     );
 
-    isToastActive = false; // Stop the toast loop when analysis is done
+    isToastActive = false;
 
     setQuestionsWithAudio((prev) =>
       prev.map((q) => {
@@ -573,6 +620,7 @@ export default function Interview() {
                                 ? handleSubmit
                                 : handleNext
                             }
+                            isLoading={isRecording}
                           >
                             {isAnalyzing
                               ? 'Analyzing...'

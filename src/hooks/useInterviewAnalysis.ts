@@ -4,6 +4,7 @@ import { AnalysisResult } from '@/pages/main';
 
 export default function useInterviewAnalysis() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +28,10 @@ export default function useInterviewAnalysis() {
         throw new Error(`Failed to generate interview: ${response.status}`);
 
       const data = await response.json();
+
+      if (data.interview_id) {
+        sessionStorage.setItem('interviewId', data.interview_id);
+      }
 
       return data.questions ?? [];
     } catch (err) {
@@ -101,6 +106,56 @@ export default function useInterviewAnalysis() {
     }
   };
 
+  const analyzeSingleQuestion = async ({
+    question,
+    audioBlob,
+  }: {
+    question: string;
+    audioBlob: Blob;
+  }) => {
+    setError(null);
+
+    try {
+      setIsRecording(true);
+      const formData = new FormData();
+
+      formData.append('file', audioBlob, 'answer.webm');
+
+      console.log('Recorded Blob:', audioBlob);
+      console.log('Blob Type:', audioBlob?.type);
+      console.log('Blob Size:', audioBlob?.size);
+
+      const deepgramResponse = await fetch(
+        'https://api.deepgram.com/v1/listen?punctuate=true&model=general&detect_language=true',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Token ${deepgramApiKey}`,
+            'Content-Type': 'audio/webm',
+          },
+          body: formData,
+        }
+      );
+
+      if (!deepgramResponse.ok) {
+        throw new Error(`Deepgram API error: ${deepgramResponse.status}`);
+      }
+
+      const deepgramResult = await deepgramResponse.json();
+      const transcript =
+        deepgramResult.results.channels[0].alternatives[0]?.transcript ?? '';
+
+      return { question, transcript };
+    } catch (err) {
+      setError(
+        `Failed to analyze question: ${err instanceof Error ? err.message : String(err)}`
+      );
+      return null;
+    } finally {
+      setIsRecording(false);
+    }
+  };
+
   const analyzeWithBackend = async (question: string, transcript: string) => {
     try {
       const response = await fetch(`${backendApiUrl}/analyze`, {
@@ -123,11 +178,49 @@ export default function useInterviewAnalysis() {
     }
   };
 
+  const saveInterviewAnswer = async ({
+    interviewId,
+    questionId,
+    transcript,
+  }: {
+    interviewId: number;
+    questionId: number;
+    transcript: string;
+  }) => {
+    try {
+      const token = sessionStorage.getItem('token');
+
+      const response = await fetch(
+        `${backendApiUrl}/interview/${interviewId}/question/${questionId}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ answer: transcript }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to save answer: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error saving answer:', error);
+      return null;
+    }
+  };
+
   return {
     isAnalyzing,
+    isRecording,
     results,
     error,
     analyzeInterview,
     fetchInterviewQuestions,
+    saveInterviewAnswer,
+    analyzeSingleQuestion,
   };
 }
