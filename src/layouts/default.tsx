@@ -1,6 +1,6 @@
 import { Avatar } from '@heroui/avatar';
 import { Button } from '@heroui/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { Navbar } from '@/components/navbar';
@@ -13,6 +13,7 @@ export default function DefaultLayout({
   const [email, setEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const savedEmail = sessionStorage.getItem('email');
@@ -29,9 +30,11 @@ export default function DefaultLayout({
     navigate('/');
   };
 
+  const isInterviewRoute = location.pathname === '/interview';
+
   return (
     <div className="flex h-screen overflow-hidden flex-col md:flex-row">
-      {isAuthenticated && (
+      {!isInterviewRoute && isAuthenticated && (
         <aside className="w-full md:w-[220px] bg-background md:border-r p-4 flex flex-col justify-between">
           <div className="flex flex-col items-center md:items-start space-y-4">
             <Avatar
@@ -65,7 +68,7 @@ export default function DefaultLayout({
       )}
 
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Navbar />
+        {!isInterviewRoute && <Navbar />}
         <main className="flex-1 p-4 md:p-6 overflow-y-auto md:overflow-hidden">
           <div className="md:h-[calc(100vh-4rem)] overflow-y-auto">
             {children}
