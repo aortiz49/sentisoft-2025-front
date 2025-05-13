@@ -42,48 +42,25 @@ export default function useInterviewAnalysis() {
   };
 
   const analyzeInterview = async (
-    questionsWithAudio: { question: string; audioBlob: Blob | null }[]
+    questionsWithAudio: { question: string; transcript: string | undefined }[]
   ) => {
     setIsAnalyzing(true);
     setError(null);
 
     try {
-      const analysisPromises = questionsWithAudio.map(async (item, index) => {
-        if (!item.audioBlob) return null;
-        const formData = new FormData();
+      const analysisPromises = questionsWithAudio.map(async (item) => {
+        if (!item.transcript) return null;
 
-        console.log('Recorded Blob:', item.audioBlob);
-        console.log('Blob Type:', item.audioBlob?.type);
-        console.log('Blob Size:', item.audioBlob?.size);
-
-        formData.append('file', item.audioBlob, `question_${index}.webm`);
-        // this sends request to Deepgram for transcription
-        const deepgramResponse = await fetch(
-          'https://api.deepgram.com/v1/listen?punctuate=true&model=general&detect_language=true',
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `Token ${deepgramApiKey}`,
-              'Content-Type': 'audio/webm',
-            },
-            body: formData,
-          }
+        const feedback = await analyzeWithBackend(
+          item.question,
+          item.transcript
         );
 
-        if (!deepgramResponse.ok) {
-          throw new Error(`Deepgram API error: ${deepgramResponse.status}`);
-        }
-
-        const deepgramResult = await deepgramResponse.json();
-        const transcript =
-          deepgramResult.results.channels[0].alternatives[0]?.transcript ?? '';
-
-        // this sends the transcript to FastAPI backend (instead of calling Claude directly)
-        const feedback = await analyzeWithBackend(item.question, transcript);
+        console.log('FEEDBACK:', feedback);
 
         return {
           question: item.question,
-          transcript,
+          transcript: item.transcript,
           feedback,
         };
       });
@@ -99,7 +76,6 @@ export default function useInterviewAnalysis() {
       setError(
         `Failed to analyze interview: ${err instanceof Error ? err.message : String(err)}`
       );
-
       return [];
     } finally {
       setIsAnalyzing(false);

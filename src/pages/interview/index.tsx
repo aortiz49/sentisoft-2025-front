@@ -239,19 +239,17 @@ export default function Interview() {
 
     if (!result) return;
 
-    // 2. Get interview ID
     const interviewId = sessionStorage.getItem('interviewId');
-
     const questionId = current.id;
 
-    // 3. Save transcript
+    // 2. Save transcript before moving on
     await saveInterviewAnswer({
       interviewId: Number(interviewId),
       questionId,
       transcript: result.transcript,
     });
 
-    // 4. Update state
+    // 3. Update local state with transcript
     setQuestionsWithAudio((prev) =>
       prev.map((q, i) =>
         i === currentQuestionIndex
@@ -263,7 +261,7 @@ export default function Interview() {
       )
     );
 
-    // 5. Move forward
+    // 4. Then either submit or go to next
     if (isLastQuestion) {
       await handleSubmit();
       setSubmitted(true);
@@ -274,7 +272,7 @@ export default function Interview() {
 
   const handleSubmit = async () => {
     stopMicrophone();
-    setSubmitted(true);
+
     setQuestionsWithAudio((prev) =>
       prev.map((q) => ({ ...q, timeRemaining: 0 }))
     );
@@ -294,10 +292,44 @@ export default function Interview() {
 
     showToastLoop();
 
+    // 🔁 Make a local copy of questions to update last one if needed
+    let updatedQuestions = [...questionsWithAudio];
+    const last = updatedQuestions[updatedQuestions.length - 1];
+
+    // 🔍 If transcript missing but audioBlob is available, analyze + save
+    if (!last.transcript && last.audioBlob) {
+      const result = await analyzeSingleQuestion({
+        question: last.question,
+        audioBlob: last.audioBlob,
+      });
+
+      if (result) {
+        const interviewId = sessionStorage.getItem('interviewId');
+
+        await saveInterviewAnswer({
+          interviewId: Number(interviewId),
+          questionId: last.id,
+          transcript: result.transcript,
+        });
+
+        // 🧠 Update local list (not just React state)
+        updatedQuestions = updatedQuestions.map((q, i) =>
+          i === updatedQuestions.length - 1
+            ? { ...q, transcript: result.transcript }
+            : q
+        );
+
+        // Also update UI state for consistency
+        setQuestionsWithAudio(updatedQuestions);
+      }
+    }
+    setSubmitted(true);
+
+    // 🧪 Now run backend analysis using updated transcripts
     const analysisResults: AnalysisResult[] = await analyzeInterview(
-      questionsWithAudio.map((q) => ({
+      updatedQuestions.map((q) => ({
         question: q.question,
-        audioBlob: q.audioBlob ?? null,
+        transcript: q.transcript,
       }))
     );
 
@@ -310,7 +342,6 @@ export default function Interview() {
         if (!result || typeof result.feedback !== 'object') {
           return q;
         }
-        console.log(result.transcript);
 
         return {
           ...q,
@@ -434,7 +465,7 @@ export default function Interview() {
                     <CardBody className="p-8 max-h-[750px] overflow-x-hidden">
                       <div className="flex flex-col gap-4 lg:overflow-y-auto">
                         <h1 className="text-2xl md:text-3xl font-bold text-foreground/90">
-                          {submitted
+                          {submitted && !isAnalyzing
                             ? 'Behavioral Interview Analysis'
                             : 'Behavioral Interview Questions'}
                         </h1>
@@ -448,7 +479,7 @@ export default function Interview() {
                           }
                           total={questionsWithAudio.length}
                         />
-                        {!submitted && (
+                        {!submitted && !isAnalyzing && (
                           <div className="flex flex-col gap-8">
                             <p className="text-foreground/80 font-medium text-yellow-500">
                               You have 3 attempts to record your answer for each
@@ -546,7 +577,7 @@ export default function Interview() {
                             )}
                           </div>
                         )}
-                        {submitted && (
+                        {submitted && !isAnalyzing && (
                           <div className="mt-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                             <div className="space-y-3">
                               <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
@@ -614,12 +645,7 @@ export default function Interview() {
                               !questionsWithAudio[currentQuestionIndex]
                                 .isSubmitted
                             }
-                            onPress={
-                              currentQuestionIndex ===
-                              questionsWithAudio.length - 1
-                                ? handleSubmit
-                                : handleNext
-                            }
+                            onPress={handleNext}
                             isLoading={isRecording}
                           >
                             {isAnalyzing
