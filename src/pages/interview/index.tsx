@@ -10,6 +10,7 @@ import { Skeleton } from '@heroui/skeleton';
 import { addToast } from '@heroui/toast';
 import { Pagination } from '@heroui/pagination';
 import { Slider } from '@heroui/slider';
+import ReactMarkdown from 'react-markdown';
 
 import CustomAudioPlayer from '@/pages/interview/CustomAudioPlayer';
 import DefaultLayout from '@/layouts/default';
@@ -625,12 +626,27 @@ export default function Interview() {
                                 <span className="font-medium text-gray-700 dark:text-gray-300">
                                   Feedback:
                                 </span>
-                                <p className="mt-1 text-gray-600 dark:text-gray-400">
-                                  {
-                                    questionsWithAudio[currentAnalysisIndex]
-                                      .feedback?.feedback
-                                  }
-                                </p>
+                                <div className="prose dark:prose-invert text-sm mt-1">
+                                  <ReactMarkdown
+                                    components={{
+                                      strong: ({ children }) => (
+                                        <strong className="text-purple-600 dark:text-purple-400">
+                                          {children}
+                                        </strong>
+                                      ),
+                                      li: ({ children }) => (
+                                        <li className="text-gray-700 dark:text-gray-300">
+                                          {children}
+                                        </li>
+                                      ),
+                                    }}
+                                  >
+                                    {
+                                      questionsWithAudio[currentAnalysisIndex]
+                                        .feedback?.feedback
+                                    }
+                                  </ReactMarkdown>
+                                </div>
                               </div>
                             </div>
                           </div>
