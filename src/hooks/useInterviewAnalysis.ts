@@ -12,6 +12,32 @@ export default function useInterviewAnalysis() {
 
   const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
+  const fetchInterviewResults = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+
+      const response = await fetch(`${backendApiUrl}/interview/my-results`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok)
+        throw new Error(
+          `Failed to fetch interview results: ${response.status}`
+        );
+
+      const data = await response.json();
+      return data ?? [];
+    } catch (err) {
+      console.error('Error fetching interview results:', err);
+      setError('Failed to fetch interview results from backend.');
+      return [];
+    }
+  };
+
   const fetchInterviewQuestions = async () => {
     try {
       const token = sessionStorage.getItem('token');
@@ -233,5 +259,6 @@ export default function useInterviewAnalysis() {
     fetchInterviewQuestions,
     saveInterviewAnswer,
     analyzeSingleQuestion,
+    fetchInterviewResults,
   };
 }

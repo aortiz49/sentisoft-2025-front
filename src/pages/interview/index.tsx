@@ -15,6 +15,7 @@ import ReactMarkdown from 'react-markdown';
 import CustomAudioPlayer from '@/pages/interview/CustomAudioPlayer';
 import DefaultLayout from '@/layouts/default';
 import useInterviewAnalysis from '@/hooks/useInterviewAnalysis';
+import { useNavigate } from 'react-router-dom';
 
 export type FeedbackType = {
   clarity: number;
@@ -381,6 +382,8 @@ export default function Interview() {
 
     console.log('Feedback sent!');
   };
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedEmail = sessionStorage.getItem('email');
@@ -803,6 +806,14 @@ export default function Interview() {
               We&apos;ll use your feedback to improve the interview experience
               for future users.
             </p>
+            <Button
+              className="bg-gradient-to-tr from-blue-500 to-blue-700 text-white shadow-lg"
+              radius="full"
+              size="lg"
+              onPress={() => navigate('/')}
+            >
+              <p className="leading-none">Back to Home</p>
+            </Button>
           </div>
         )}
       </section>
