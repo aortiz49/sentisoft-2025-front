@@ -32,7 +32,7 @@ export default function DefaultLayout({
   return (
     <div className="flex h-screen overflow-hidden flex-col md:flex-row">
       {isAuthenticated && (
-        <aside className="w-full md:w-[220px] bg-background border-r p-4 flex flex-col justify-between">
+        <aside className="w-full md:w-[220px] bg-background md:border-r p-4 flex flex-col justify-between">
           <div className="flex flex-col items-center md:items-start space-y-4">
             <Avatar
               alt="User avatar"
