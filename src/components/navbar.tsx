@@ -8,8 +8,7 @@ import {
 } from '@heroui/navbar';
 import { Button } from '@heroui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-import { ThemeSwitch } from '@/components/theme-switch';
+import { ThemeSwitch } from './theme-switch';
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -18,6 +17,7 @@ export const Navbar = () => {
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
+
     setIsLoggedIn(!!token);
   }, []);
 
@@ -29,23 +29,17 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand className="gap-3 max-w-fit">
           <Link
-            className="flex justify-start items-center gap-1"
-            color="foreground"
-            href="/"
+            aria-label="logo"
+            href="/#home"
+            className="hidden sm:flex items-center space-x-2"
           >
-            <a
-              aria-label="logo"
-              className="hidden sm:flex items-center space-x-2"
-              href="/#home"
-            >
-              <div aria-hidden="true" className="flex space-x-1">
-                <div className="size-4 rounded-full bg-gray-900 dark:bg-white" />
-                <div className="h-6 w-2 bg-primary dark:bg-violet-500" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                SentiSoft
-              </span>
-            </a>
+            <div aria-hidden="true" className="flex space-x-1">
+              <div className="size-4 rounded-full bg-gray-900 dark:bg-white" />
+              <div className="h-6 w-2 bg-primary dark:bg-violet-500" />
+            </div>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+              SentiSoft
+            </span>
           </Link>
         </NavbarBrand>
       </NavbarContent>
@@ -79,6 +73,7 @@ export const Navbar = () => {
             </Button>
           )}
         </NavbarItem>
+        <ThemeSwitch />
       </NavbarContent>
     </HeroUINavbar>
   );

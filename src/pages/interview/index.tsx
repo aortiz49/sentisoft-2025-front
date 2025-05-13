@@ -67,7 +67,12 @@ export default function Interview() {
   const handleStart = async () => {
     setIsLoading(true);
     setStarted(true);
+
     const questions = await fetchInterviewQuestions();
+    if (!questions.length) {
+      setIsLoading(false);
+      return;
+    }
 
     const selected = questions.map((q: any) => ({
       question: q.text,
@@ -80,6 +85,7 @@ export default function Interview() {
       retryCount: 0,
       isSubmitted: false,
     }));
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     setTimeout(() => {

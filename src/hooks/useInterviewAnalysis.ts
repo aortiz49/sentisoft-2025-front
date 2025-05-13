@@ -13,23 +13,25 @@ export default function useInterviewAnalysis() {
 
   const fetchInterviewQuestions = async () => {
     try {
-      const response = await fetch(
-        `${backendApiUrl}/interview/questions/random`,
-        {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
+      const token = sessionStorage.getItem('token');
+
+      const response = await fetch(`${backendApiUrl}/interview/new`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok)
-        throw new Error(`Failed to fetch questions: ${response.status}`);
-      const questions = await response.json();
+        throw new Error(`Failed to generate interview: ${response.status}`);
 
-      return questions;
+      const data = await response.json();
+
+      return data.questions ?? [];
     } catch (err) {
-      console.error('Error fetching interview questions:', err);
-      setError('Failed to load questions from backend.');
-
+      console.error('Error generating interview:', err);
+      setError('Failed to generate interview from backend.');
       return [];
     }
   };
