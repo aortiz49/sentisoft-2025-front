@@ -8,6 +8,7 @@ import {
 } from '@heroui/navbar';
 import { Button } from '@heroui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
+
 import { ThemeSwitch } from './theme-switch';
 
 export const Navbar = () => {
@@ -30,8 +31,8 @@ export const Navbar = () => {
         <NavbarBrand className="gap-3 max-w-fit">
           <Link
             aria-label="logo"
-            href="/#home"
             className="hidden sm:flex items-center space-x-2"
+            href="/#home"
           >
             <div aria-hidden="true" className="flex space-x-1">
               <div className="size-4 rounded-full bg-gray-900 dark:bg-white" />
