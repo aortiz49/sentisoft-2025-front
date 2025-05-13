@@ -42,7 +42,12 @@ export default function useInterviewAnalysis() {
   };
 
   const analyzeInterview = async (
-    questionsWithAudio: { question: string; transcript: string | undefined }[]
+    questionsWithAudio: {
+      question: string;
+      transcript: string | undefined;
+      questionId: number;
+    }[],
+    interviewId: number
   ) => {
     setIsAnalyzing(true);
     setError(null);
@@ -57,6 +62,22 @@ export default function useInterviewAnalysis() {
         );
 
         console.log('FEEDBACK:', feedback);
+        console.log('CLARITY:', feedback.clarity);
+        console.log('STRUCTURE:', feedback.structure);
+        console.log('COMMUNICATION:', feedback.communication);
+
+        console.log('question:', item.question);
+        console.log('questionId:', item.questionId);
+        console.log('interviewId:', interviewId);
+
+        saveInterviewAnswer({
+          interviewId,
+          questionId: item.questionId,
+          clarity_score: feedback.clarity,
+          structure_score: feedback.structure,
+          communication_score: feedback.communication,
+          feedback: feedback.feedback,
+        });
 
         return {
           question: item.question,
@@ -158,10 +179,18 @@ export default function useInterviewAnalysis() {
     interviewId,
     questionId,
     transcript,
+    clarity_score,
+    structure_score,
+    communication_score,
+    feedback,
   }: {
     interviewId: number;
     questionId: number;
-    transcript: string;
+    transcript?: string;
+    clarity_score?: number;
+    structure_score?: number;
+    communication_score?: number;
+    feedback?: string;
   }) => {
     try {
       const token = sessionStorage.getItem('token');
@@ -174,7 +203,13 @@ export default function useInterviewAnalysis() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ answer: transcript }),
+          body: JSON.stringify({
+            answer: transcript,
+            clarity_score,
+            structure_score,
+            communication_score,
+            feedback,
+          }),
         }
       );
 

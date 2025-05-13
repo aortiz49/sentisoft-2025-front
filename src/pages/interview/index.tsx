@@ -331,7 +331,9 @@ export default function Interview() {
       updatedQuestions.map((q) => ({
         question: q.question,
         transcript: q.transcript,
-      }))
+        questionId: q.id,
+      })),
+      Number(sessionStorage.getItem('interviewId'))
     );
 
     isToastActive = false;
