@@ -1,6 +1,6 @@
 # Vite & HeroUI Template
 
-This is a template for creating applications using Vite and HeroUI (v2).
+This is a template for creating applications using Vite and HeroUI (v3).
 
 [Try it on CodeSandbox](https://githubbox.com/frontio-ai/vite-template)
 
